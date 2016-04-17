@@ -55,16 +55,17 @@ class WizardImportarKml(models.TransientModel):
                                 if not tup_rec_id:
                                     tup_rec_id = tup_recorrido.create({'name':linea, 'colectivo_id':tup_col_id.id})
 
+                                tup_col_id.write({'recorrido_id':tup_rec_id.id})
+
                                 if "Ida" in recorrido:
                                     tup_rec_id.write({'kml_ida':kml_data})
                                 elif "Vuelta" in recorrido:
                                     tup_rec_id.write({'kml_vuelta':kml_data})
-
-
                     except Exception, e:
                         print e
                         print "No se pudo importar: ",filename
                         pass
+                tup_colectivo.search([]).procesar_kml()
 
 
 

@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_tup_colectivo,access_tup_colectivo,model_tup_colectivo,,1,0,0,0
 access_tup_recorrido,access_tup_recorrido,model_tup_recorrido,,1,0,0,0
+access_map_polyline,access_map_polyline,model_map_polyline,,1,0,0,0
+access_map_latlng,access_map_latlng,model_map_latlng,,1,0,0,0

@@ -23,7 +23,7 @@ class MapLatLng(models.Model):
     latitude = fields.Float('Latitud', size=15, digits=(4,12), required=True)
     longitude = fields.Float('Longitud', size=15, digits=(4,12), required=True)
     
-    polyline_id = fields.Many2one('map.polyline', 'Polyline')
+    polyline_id = fields.Many2one('map.polyline', 'Polyline', ondelete="cascade")
     
 
     _sql_constraints = [

@@ -41,8 +41,10 @@
             <field name="arch" type="xml">
                 <form string="Formulario de Colectivo" version="7.0">
                     <header>
+                        <!-- <button name="procesar_kml" type="object" string="Procesar KML"/> -->
                     </header>
                     <sheet>
+                        <field name="id" invisible="1"/>
                         <h1><field name="name" placeholder="Nombre"/></h1>
                         <group>
                             <group>
@@ -50,7 +52,7 @@
                                 <field name="active"/>
                             </group>
                             <group>
-                                <field name="recorrido_id"/>
+                                <field name="recorrido_id" domain="[('colectivo_id','=',id)]"/>
                             </group>
                         </group>
                         <label for="recorrido_ids"/>

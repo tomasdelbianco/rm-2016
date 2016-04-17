@@ -48,6 +48,26 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
         var markerClicked = 0;
         var activeMarker = false;
         var lastClicked = false;
+        var recorrido_ida = null;
+        var recorrido_vuelta = null;
+        
+        $("select[name='colectivos']").on('change', function(c){
+            var col_id = parseInt($("select[name='colectivos']").val());            
+            openerp.jsonRpc("/rm/get_recorrido", 'call', {colectivo_id:col_id}).then(function (data) {
+                var gmaps_rec_ida = [];
+                $.each(data.recorrido_ida, function(index, value) {
+                    gmaps_rec_ida.push(new google.maps.LatLng(value.lng, value.lat))
+                }); 
+                var recorrido = new google.maps.Polyline({
+                    path: gmaps_rec_ida,
+                    geodesic: true,
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2
+                  });
+                recorrido.setMap(map);                
+            });
+        });
 
         for (var i = 0; i < json.data.length; i++) {
 
