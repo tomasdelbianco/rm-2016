@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <template id="website.homepage" name="Homepage" page="True">
+            <t t-call="website.layout">
+                <div class="oe_structure"></div>
+                <t t-call="theme_rosariomapas.canvas_mapa"/>
+                <div class="oe_structure"></div>
+                <t t-call="theme_rosariomapas.script_mapa"/>
+            </t>
+        </template>
+        
+    </data>
+</openerp>

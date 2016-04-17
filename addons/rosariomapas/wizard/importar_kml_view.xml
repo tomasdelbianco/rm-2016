@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+         <act_window name="Importar Recorridos KML"
+            res_model="wizard.importar.kml"
+            src_model="tup.recorrido"
+            view_mode="form"
+            target="new"
+            key2="client_action_multi"
+            multi="True"
+            id="act_stock_ajuste_inventario_archivo"/>
+
+        <menuitem id="menu_importar_recorrido_kml" name="Importar Recorridos KML" parent="rosariomapas.herramientas_tup" sequence="4" action="act_stock_ajuste_inventario_archivo"/>
+
+        <record id="view_wizard_importar_kml_form" model="ir.ui.view">
+            <field name="name">Importar Recorridos KML</field>
+            <field name="model">wizard.importar.kml</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <group>
+                        <group>
+                            <field name="archivo_kml_zip"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="procesar_kml" string="Importar KML" type="object" class="oe_highlight"/>
+                        o
+                        <button string="Cancelar" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+        
+    </data>
+</openerp>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Transporte Urbano -->
+        <menuitem id="menu_tup" parent="" name="Transporte Urbano" sequence="10"/>
+        <menuitem id="submenu_tup" parent="menu_tup" name="Transporte Urbano" sequence="10"/>
+        <menuitem id="herramientas_tup" parent="menu_tup" name="Herramientas" sequence="99"/>
+        
+        <!-- EMPRESAS TUP -->
+        <record model="ir.ui.view" id="empresa_tup_tree_view">
+            <field name="name">Listado de Empresas TUP</field>
+            <field name="model">res.partner</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Listado de Empresas TUP" version="7.0">
+                    <field name="name"/>
+                    <field name="website"/>
+                    <field name="email"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_empresa_tup">
+            <field name="name">Empresas TUP</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="empresa_tup_tree_view"/>
+            <field name="domain">[('es_empresa_tup','=',True)]</field>
+            <field name="context">{'default_es_empresa_tup':True, 'default_is_company':True}</field>
+        </record>
+
+        <menuitem id="menu_empresa_tup" parent="submenu_tup" sequence="10" action="action_empresa_tup"/>
+        
+        <!-- COLECTIVOS -->
+        <record model="ir.ui.view" id="tup_colectivo_form_view">
+            <field name="name">Formulario de Colectivo</field>
+            <field name="model">tup.colectivo</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Formulario de Colectivo" version="7.0">
+                    <header>
+                    </header>
+                    <sheet>
+                        <h1><field name="name" placeholder="Nombre"/></h1>
+                        <group>
+                            <group>
+                                <field name="empresa_tup_id"/>
+                                <field name="active"/>
+                            </group>
+                            <group>
+                                <field name="recorrido_id"/>
+                            </group>
+                        </group>
+                        <label for="recorrido_ids"/>
+                        <field name="recorrido_ids" nolabel="1"/>
+                        <label for="descripcion"/>
+                        <field name="descripcion" nolabel="1"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="tup_colectivo_tree_view">
+            <field name="name">Listado de Colectivo</field>
+            <field name="model">tup.colectivo</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Listado de Colectivo" version="7.0">
+                    <field name="name"/>
+                    <field name="empresa_tup_id"/>
+                    <field name="recorrido_id"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="tup_colectivo_search_view" >
+            <field name="name">Filtro de Colectivo</field>
+            <field name="model">tup.colectivo</field>
+            <field name="type">search</field>      
+            <field name="arch" type="xml">
+                <search string="Buscar ">
+                    <field name="name"/>
+                    <field name="empresa_tup_id"/>
+                    <!--<filter name='state' string="Excluir borradores" domain="[('state', '!=', 'draft')]" icon="terp-go-week"/>-->
+                    <separator/>
+                    <!--<field name="name" filter_domain="[('name', 'ilike', self)]"/>-->
+                    <group expand="0" string="Agrupar por...">
+                        <filter string="Empresa" context="{'group_by':'empresa_tup_id'}"/>
+                        <!--<filter string="Nombre" domain="[]" context="{'group_by':'name'}" icon="terp-personal"/>-->
+                    </group>
+               </search>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_tup_colectivo">
+            <field name="name">Colectivos</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tup.colectivo</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="tup_colectivo_tree_view"/>
+            <field name="search_view_id" ref="tup_colectivo_search_view"/>
+        </record>
+        
+        <menuitem id="menu_tup_colectivo" parent="submenu_tup" sequence="10" action="action_tup_colectivo"/>
+
+    </data>
+</openerp>

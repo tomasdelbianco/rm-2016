@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <template id="assets_frontend" inherit_id="website.assets_frontend" name="Assets Rosariomapas">
+            <xpath expr="." position="inside">
+                <link href="/theme_rosariomapas/static/fonts/font-awesome.css" rel="stylesheet" type="text/css"/>
+                <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'/>
+                <link rel="stylesheet" href="/theme_rosariomapas/static/bootstrap/css/bootstrap.css" type="text/css"/>
+                <link rel="stylesheet" href="/theme_rosariomapas/static/css/bootstrap-select.min.css" type="text/css"/>
+                <link rel="stylesheet" href="/theme_rosariomapas/static/css/owl.carousel.css" type="text/css"/>
+                <link rel="stylesheet" href="/theme_rosariomapas/static/css/jquery.mCustomScrollbar.css" type="text/css"/>
+                <link rel="stylesheet" href="/theme_rosariomapas/static/css/style.css" type="text/css"/>
+                <link rel="stylesheet" href="/theme_rosariomapas/static/css/user.style.css" type="text/css"/>
+            </xpath>
+        </template>
+
+        <template id="rm_header" inherit_id="website.layout" name="Header RosarioMapas">
+            <xpath expr="//body" position="replace">
+                <body onunload="" class="map-fullscreen page-homepage navigation-off-canvas" id="page-top">
+                    
+                <!-- Outer Wrapper-->
+                <div id="outer-wrapper">
+                    <!-- Inner Wrapper -->
+                    <div id="inner-wrapper">
+                        <!-- Navigation-->
+                        <header>
+                            <div class="header">
+                                <div class="wrapper">
+                                    <div class="brand">
+                                        <a href="index-directory.html" class="navbar-brand"><img src="/theme_rosariomapas/static/img/logo.png" alt="logo"/></a>
+                                    </div>
+                                    <nav class="navigation-items">
+                                        <div class="wrapper">
+                                            <ul class="nav navbar-nav navbar-right" id="top_menu">
+                                                <t t-foreach="website.menu_id.child_id" t-as="submenu">
+                                                    <t t-call="website.submenu"/>
+                                                </t>
+                                                <li class="divider" t-ignore="true" t-if="website.user_id != user_id"/>
+                                                <li class="dropdown" t-ignore="true" t-if="website.user_id != user_id">
+                                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                                        <b>
+                                                            <span t-esc="(len(user_id.name)&gt;25) and (user_id.name[:23]+'...') or user_id.name"/>
+                                                            <span class="caret"></span>
+                                                        </b>
+                                                    </a>
+                                                    <ul class="dropdown-menu js_usermenu" role="menu">
+                                                        <li><a t-attf-href="/web/session/logout?redirect=/" role="menuitem">Cerrar Sesión</a></li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </nav>
+                                </div>
+                            </div>
+                        </header>
+                        <!-- end Navigation-->
+                        <t t-raw="0"/>
+                        <!-- end Page Canvas-->
+                        <!--Page Footer-->
+                        <footer id="page-footer">
+                            <div class="inner">
+                                <div class="footer-bottom">
+                                    <div class="container">
+                                        <span class="left">rosariomapas.com</span>
+                                        <span class="right">
+                                            <a href="#page-top" class="to-top roll"><i class="fa fa-angle-up"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <!--/.footer-bottom-->
+                            </div>
+                        </footer>
+                        <!--end Page Footer-->
+                    </div>
+                    <!-- end Inner Wrapper -->
+                </div>
+                <!-- end Outer Wrapper-->
+                </body>
+            </xpath>
+        </template>
+
+        <template id="canvas_mapa" name="Mapa">
+            <!-- Page Canvas-->
+            <div id="page-canvas">
+                <!--Off Canvas Navigation-->
+                <nav class="off-canvas-navigation">
+                    <header>Navigation</header>
+                    <div class="main-navigation navigation-off-canvas"></div>
+                </nav>
+                <!--end Off Canvas Navigation-->
+                <!--Page Content-->
+                <div id="page-content">
+                <!-- Map Canvas-->
+                <div class="map-canvas list-width-30 results-collapsed">
+                    <!-- Map -->
+                    <div class="map">
+                        <!-- <div class="toggle-navigation">
+                            <div class="icon">
+                                <div class="line"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                            </div>
+                        </div> -->
+                        <!--/.toggle-navigation-->
+                        <div id="map" class="has-parallax"></div>
+                        <!--/#map-->
+                        <div class="search-bar horizontal">
+                            <form class="main-search border-less-inputs" role="form" method="post">
+                                <div class="input-row">
+                                    <div class="form-group">
+                                        <select name="colectivos" title="Recorridos Colectivos" data-live-search="true">
+                                            <option value="0">Recorridos Colectivos</option>
+                                            <t t-foreach="colectivos" t-as="colectivo">
+                                                <option t-attf-value="{{colectivo.id}}"><t t-esc="colectivo.name"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <!-- /.form-group -->
+                                    <div class="form-group">
+                                        <select name="category" multiple="multiple" title="Puntos de Interés" data-live-search="true">
+                                            <option value="1">Stores</option>
+                                            <option value="2" class="sub-category">Apparel</option>
+                                            <option value="3" class="sub-category">Computers</option>
+                                            <option value="4" class="sub-category">Nature</option>
+                                            <option value="5">Tourism</option>
+                                            <option value="6">Restaurant Bars</option>
+                                            <option value="7" class="sub-category">Bars</option>
+                                            <option value="8" class="sub-category">Vegetarian</option>
+                                            <option value="9" class="sub-category">Steak Grill</option>
+                                            <option value="10">Sports</option>
+                                            <option value="11" class="sub-category">Cycling</option>
+                                            <option value="12" class="sub-category">Water Sports</option>
+                                            <option value="13" class="sub-category">Winter Sports</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="keyword" placeholder="Buscar lugares o direcciones..."/>
+                                    </div>
+                                    <!-- /.form-group -->
+                                    <!-- /.form-group -->
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    </div>
+                                    <!-- /.form-group -->
+                                </div>
+                                <!-- /.input-row -->
+                            </form>
+                            <!-- /.main-search -->
+                        </div>
+                        <!-- /.search-bar -->
+                    </div>
+                    <!-- end Map -->
+                    <!--Items List-->
+                    <div class="items-list">
+                        <div class="inner">
+                            <header>
+                                <h3>Results</h3>
+                            </header>
+                            <ul class="results list">
+
+                            </ul>
+                        </div>
+                        <!--results-->
+                    </div>
+                    <!--end Items List-->
+                </div>
+                <!-- end Map Canvas-->
+                    <!--end Partners-->
+                </div>
+                <!-- end Page Content-->
+            </div>
+        </template>
+
+        <template id="script_mapa" name="Script Mapa">
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/before.load.js"></script>
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/jquery-migrate-1.2.1.min.js"></script>
+            <script type="text/javascript" src="/theme_rosariomapas/static/bootstrap/js/bootstrap.min.js"></script>
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/smoothscroll.js"></script>
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/bootstrap-select.min.js"></script>
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/jquery.hotkeys.js"></script>
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/jquery.nouislider.all.min.js"></script>
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+            <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/infobox.js"></script>
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/richmarker-compiled.js"></script>
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/markerclusterer.js"></script>
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/custom.js"></script>
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/maps.js"></script>
+
+            <!--[if lte IE 9]>
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/ie-scripts.js"></script>
+            <![endif]-->
+
+            <script>
+                var _latitude = -32.9347224;
+                var _longitude = -60.6694245;
+                var jsonPath = '/theme_rosariomapas/static/json/items.json.txt';
+
+                // Load JSON data and create Google Maps
+
+                $.getJSON(jsonPath)
+                    .done(function(json) {
+                        createHomepageGoogleMap(_latitude,_longitude,json);
+                    })
+                    .fail(function( jqxhr, textStatus, error ) {
+                        console.log(error);
+                    })
+                ;
+
+                // Set if language is RTL and load Owl Carousel
+
+                $(window).load(function(){
+                    var rtl = false; // Use RTL
+                    initializeOwl(rtl);
+                });
+                
+                autoComplete();
+
+            </script>
+
+            <!--[if lte IE 9]>
+            <script type="text/javascript" src="/theme_rosariomapas/static/js/ie-scripts.js"></script>
+            <![endif]-->
+        </template>
+        
+    </data>
+</openerp>
