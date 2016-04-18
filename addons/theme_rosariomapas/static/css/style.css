@@ -942,7 +942,7 @@ ul.bullets li a:hover {
 }
 
 #page-content {
-  padding-bottom: 60px;
+  /*padding-bottom: 60px;*/
   z-index: 0;
   position: relative;
 }

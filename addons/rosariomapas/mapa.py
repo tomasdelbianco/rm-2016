@@ -13,6 +13,18 @@ from openerp.tools.safe_eval import safe_eval as eval
 import logging
 _logger = logging.getLogger(__name__)
 
+
+# SELECT distinct map_latlng.polyline_id
+# from map_latlng
+# where
+# SQRT(POW((69.1 * (latitude - {{LAT_ORIGEN}})) , 2 ) + 
+# POW((53 * (longitude - {{LNG_ORIGEN}})), 2)) < 0.3 
+# and map_latlng.polyline_id in (SELECT distinct map_latlng.polyline_id
+# from map_latlng
+# where
+# SQRT(POW((69.1 * (latitude - {{LAT_DESTINO}})) , 2 ) + 
+# POW((53 * (longitude - {{LNG_DESTINO}})), 2)) < 0.3)
+
 class MapLatLng(models.Model):
     # Variables
     _name = "map.latlng"

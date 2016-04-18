@@ -29,7 +29,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
             zoom: 14,
             center: mapCenter,
             disableDefaultUI: false,
-            scrollwheel: false,
+            scrollwheel: true,
             /*styles: mapStyles,*/
             mapTypeControlOptions: {
                 style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
@@ -48,27 +48,61 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
         var markerClicked = 0;
         var activeMarker = false;
         var lastClicked = false;
-        var recorrido_ida = null;
-        var recorrido_vuelta = null;
+        var recorrido_ida = false;
+        var recorrido_vuelta = false;
         
         $("select[name='colectivos']").on('change', function(c){
             var col_id = parseInt($("select[name='colectivos']").val());            
             openerp.jsonRpc("/rm/get_recorrido", 'call', {colectivo_id:col_id}).then(function (data) {
-                var gmaps_rec_ida = [];
-                $.each(data.recorrido_ida, function(index, value) {
-                    gmaps_rec_ida.push(new google.maps.LatLng(value.lng, value.lat))
-                }); 
-                var recorrido = new google.maps.Polyline({
-                    path: gmaps_rec_ida,
+                if (recorrido_ida !== false){
+                    recorrido_ida.setMap(null);
+                }
+                if (recorrido_vuelta !== false){
+                    recorrido_vuelta.setMap(null);
+                }
+                var lineSymbol = {
+                    path: google.maps.SymbolPath.FORWARD_OPEN_ARROW
+                };
+
+                recorrido_ida = new google.maps.Polyline({
+                    path: data.recorrido_ida,
                     geodesic: true,
                     strokeColor: '#FF0000',
-                    strokeOpacity: 1.0,
-                    strokeWeight: 2
+                    strokeOpacity: 0.7,
+                    strokeWeight: 5,
+                    /*icons: [{
+                      icon: lineSymbol,
+                      offset: '90%',
+                      repeat: '10%'
+                    }],*/
                   });
-                recorrido.setMap(map);                
+                recorrido_vuelta = new google.maps.Polyline({
+                    path: data.recorrido_vuelta,
+                    geodesic: true,
+                    strokeColor: '#0000FF',
+                    strokeOpacity: 0.7,
+                    strokeWeight: 5,
+                    /*icons: [{
+                      icon: lineSymbol,
+                      offset: '100%',
+                      repeat: '10%'
+                    }],*/
+                  });
+                recorrido_ida.setMap(map);
+                recorrido_vuelta.setMap(map);
+                var bounds = new google.maps.LatLngBounds();
+                var path_1 = recorrido_ida.getPath();
+                var path_2 = recorrido_vuelta.getPath();
+                for (var i = 0; i < path_1.getLength(); i++) {
+                    bounds.extend(path_1.getAt(i));
+                }
+                for (var i = 0; i < path_2.getLength(); i++) {
+                    bounds.extend(path_2.getAt(i));
+                }
+                map.fitBounds(bounds);
             });
         });
-
+        
         for (var i = 0; i < json.data.length; i++) {
 
             // Google map marker content -----------------------------------------------------------------------------------
@@ -339,7 +373,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
 
         // Autocomplete address ----------------------------------------------------------------------------------------
 
-        var input = document.getElementById('location') ;
+        /*var input = document.getElementById('location') ;
         var autocomplete = new google.maps.places.Autocomplete(input, {
             types: ["geocode"]
         });
@@ -368,7 +402,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                     (place.address_components[2] && place.address_components[2].short_name || '')
                 ].join(' ');
             }
-        });
+        });*/
 
 
     }

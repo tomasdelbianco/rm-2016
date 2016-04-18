@@ -107,7 +107,7 @@ class tup_colectivo(models.Model):
                     recorrido = str(k.Document.Placemark.LineString.coordinates).strip()
                     poly_id = self.env['map.polyline'].create({})
                     for latlng in recorrido.split(" "):
-                        lat, lng, alt = latlng.split(",")
+                        lng, lat, alt = latlng.split(",")
                         if lat and lng:
                             poly_id.write({'latlng_ids':[(0, False, {'latitude':lat, 'longitude':lng})]})
                     obj.recorrido_id.polyline_ida_id = poly_id
@@ -118,7 +118,7 @@ class tup_colectivo(models.Model):
                     recorrido = str(k.Document.Placemark.LineString.coordinates).strip()
                     poly_id = self.env['map.polyline'].create({})
                     for latlng in recorrido.split(" "):
-                        lat, lng, alt = latlng.split(",")
+                        lng, lat, alt = latlng.split(",")
                         if lat and lng:
                             poly_id.write({'latlng_ids':[(0, False, {'latitude':lat, 'longitude':lng})]})
                     obj.recorrido_id.polyline_vuelta_id = poly_id
