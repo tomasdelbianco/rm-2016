@@ -50,9 +50,55 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
         var lastClicked = false;
         var recorrido_ida = false;
         var recorrido_vuelta = false;
-        
+
+        /* Busqueda de colectivos */
+        google.maps.event.addListener(map, 'click', function(event) {
+           placeMarker(event.latLng);
+        });
+        var markers_cole = [];
+        function placeMarker(location) {
+            if (markers_cole.length < 2){
+                // Add circle overlay and bind to marker
+                var circle = new google.maps.Circle({
+                  map: map,
+                  radius: 482,    // 10 miles in metres
+                  strokeColor: '#FF0000',
+                  strokeOpacity: 0.8,
+                  strokeWeight: 0,
+                  fillColor: '#FF0000',
+                  fillOpacity: 0.15,
+                });
+                var marker = new google.maps.Marker({
+                    position: location,
+                    draggable: true,
+                    map: map
+                });
+                google.maps.event.addListener(marker, "dragend", function(event) { 
+                    placeMarker();
+                }); 
+                markers_cole.push(marker);
+                circle.bindTo('center', marker, 'position');
+            }
+            if (markers_cole.length == 2){
+                openerp.jsonRpc("/rm/search_colectivo", 'call', {orig_lat:markers_cole[0].getPosition().lat(), orig_lng:markers_cole[0].getPosition().lng(), dest_lat:markers_cole[1].getPosition().lat(), dest_lng:markers_cole[1].getPosition().lng()}).then(function (data) {
+                    $("select[name='colectivos'] option").hide();
+                    $("select[name='colectivos'] option").prop('selected', false);
+                    $.each(data.resultado, function(c){
+                        var opt = $("select[name='colectivos'] option[value=" + String(data.resultado[c]) + "]").show()
+                        if (c == 0){
+                            $("select[name='colectivos']").val(data.resultado[c])
+                        }
+                    });
+                    $("select[name='colectivos']").selectpicker('refresh');
+                    $("select[name='colectivos']").trigger('change');
+                });
+            }
+        }
+
         $("select[name='colectivos']").on('change', function(c){
-            var col_id = parseInt($("select[name='colectivos']").val());            
+            var col_id = parseInt($("select[name='colectivos']").val());
+            if (col_id == 0)
+                return;
             openerp.jsonRpc("/rm/get_recorrido", 'call', {colectivo_id:col_id}).then(function (data) {
                 if (recorrido_ida !== false){
                     recorrido_ida.setMap(null);
