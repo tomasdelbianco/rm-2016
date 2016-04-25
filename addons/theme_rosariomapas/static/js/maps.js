@@ -52,14 +52,19 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
         var recorrido_vuelta = false;
 
         /* Busqueda de colectivos */
-        google.maps.event.addListener(map, 'click', function(event) {
-           placeMarker(event.latLng);
+        var marker_bus_origen = new google.maps.Marker({
+            map: map,
+            anchorPoint: new google.maps.Point(0, -29)
+        });
+        var marker_bus_destino = new google.maps.Marker({
+            map: map,
+            anchorPoint: new google.maps.Point(0, -29)
         });
         var markers_cole = [];
         function placeMarker(location) {
             if (markers_cole.length < 2){
                 // Add circle overlay and bind to marker
-                var circle = new google.maps.Circle({
+                /*var circle = new google.maps.Circle({
                   map: map,
                   radius: 482,    // 10 miles in metres
                   strokeColor: '#FF0000',
@@ -67,7 +72,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                   strokeWeight: 0,
                   fillColor: '#FF0000',
                   fillOpacity: 0.15,
-                });
+                });*/
                 var marker = new google.maps.Marker({
                     position: location,
                     draggable: true,
@@ -77,7 +82,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                     placeMarker();
                 }); 
                 markers_cole.push(marker);
-                circle.bindTo('center', marker, 'position');
+                /*circle.bindTo('center', marker, 'position');*/
             }
             if (markers_cole.length == 2){
                 openerp.jsonRpc("/rm/search_colectivo", 'call', {orig_lat:markers_cole[0].getPosition().lat(), orig_lng:markers_cole[0].getPosition().lng(), dest_lat:markers_cole[1].getPosition().lat(), dest_lng:markers_cole[1].getPosition().lng()}).then(function (data) {
@@ -89,16 +94,114 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                             $("select[name='colectivos']").val(data.resultado[c])
                         }
                     });
+                    $("select[name='colectivos'] option[value='buscar']").show();
                     $("select[name='colectivos']").selectpicker('refresh');
                     $("select[name='colectivos']").trigger('change');
                 });
             }
         }
 
+        var busqueda_colectivo = false;
         $("select[name='colectivos']").on('change', function(c){
-            var col_id = parseInt($("select[name='colectivos']").val());
+            $(".panel-buscar-ori-dst").css('display','none');
+            var values = $("select[name='colectivos']").val();
+            var col_id = parseInt(values);
             if (col_id == 0)
                 return;
+            if (values === "buscar"){
+                var input_bus_origen = $("input[name='bus_origen']");
+                var input_bus_destino = $("input[name='bus_destino']");
+                
+                /* Inicializo campos de busqueda de colectivos por Origen y Destino */
+                if (!busqueda_colectivo){
+                    busqueda_colectivo = true;
+
+                    var defaultBounds = new google.maps.LatLngBounds(
+                      new google.maps.LatLng(-33.08875, -60.836883),
+                      new google.maps.LatLng(-32.726779, -60.431960));
+
+                    var options = {
+                        bounds: defaultBounds,
+                        types: [],
+                        componentRestrictions: {country: "ar"}
+                    };
+
+                    var autocomplete_bus_origen = new google.maps.places.Autocomplete(input_bus_origen[0], options);
+                    var autocomplete_bus_destino = new google.maps.places.Autocomplete(input_bus_destino[0], options);
+
+                    google.maps.event.addListener(map, 'click', function(event) {
+                       placeMarker(event.latLng);
+                    });
+
+                    autocomplete_bus_origen.addListener('place_changed', function() {
+                        var place = autocomplete_bus_origen.getPlace();
+                        if (!place.geometry) {
+                          return;
+                        }
+
+                        // If the place has a geometry, then present it on a map.
+                        if (place.geometry.viewport) {
+                          /*map.fitBounds(place.geometry.viewport);*/
+                        } else {
+                          map.setCenter(place.geometry.location);
+                          map.setZoom(17);  // Why 17? Because it looks good.
+                        }
+                        marker_bus_origen.setIcon(/** @type {google.maps.Icon} */({
+                          url: place.icon,
+                          size: new google.maps.Size(71, 71),
+                          origin: new google.maps.Point(0, 0),
+                          anchor: new google.maps.Point(17, 34),
+                          scaledSize: new google.maps.Size(35, 35)
+                        }));
+                        marker_bus_origen.setPosition(place.geometry.location);
+                        marker_bus_origen.setVisible(true);
+
+                        var address = '';
+                        if (place.address_components) {
+                          address = [
+                            (place.address_components[0] && place.address_components[0].short_name || ''),
+                            (place.address_components[1] && place.address_components[1].short_name || ''),
+                            (place.address_components[2] && place.address_components[2].short_name || '')
+                          ].join(' ');
+                        }
+                    });
+
+                    autocomplete_bus_destino.addListener('place_changed', function() {
+                        var place = autocomplete_bus_destino.getPlace();
+                        if (!place.geometry) {
+                          return;
+                        }
+
+                        // If the place has a geometry, then present it on a map.
+                        if (place.geometry.viewport) {
+                          /*map.fitBounds(place.geometry.viewport);*/
+                        } else {
+                          map.setCenter(place.geometry.location);
+                          map.setZoom(17);  // Why 17? Because it looks good.
+                        }
+                        marker_bus_destino.setIcon(/** @type {google.maps.Icon} */({
+                          url: place.icon,
+                          size: new google.maps.Size(71, 71),
+                          origin: new google.maps.Point(0, 0),
+                          anchor: new google.maps.Point(17, 34),
+                          scaledSize: new google.maps.Size(35, 35)
+                        }));
+                        marker_bus_destino.setPosition(place.geometry.location);
+                        marker_bus_destino.setVisible(true);
+
+                        var address = '';
+                        if (place.address_components) {
+                          address = [
+                            (place.address_components[0] && place.address_components[0].short_name || ''),
+                            (place.address_components[1] && place.address_components[1].short_name || ''),
+                            (place.address_components[2] && place.address_components[2].short_name || '')
+                          ].join(' ');
+                        }
+                    });
+                }
+                $(".panel-buscar-ori-dst").css('display','block');
+                return;
+            }
             openerp.jsonRpc("/rm/get_recorrido", 'call', {colectivo_id:col_id}).then(function (data) {
                 if (recorrido_ida !== false){
                     recorrido_ida.setMap(null);
@@ -116,11 +219,6 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                     strokeColor: '#FF0000',
                     strokeOpacity: 0.7,
                     strokeWeight: 5,
-                    /*icons: [{
-                      icon: lineSymbol,
-                      offset: '90%',
-                      repeat: '10%'
-                    }],*/
                   });
                 recorrido_vuelta = new google.maps.Polyline({
                     path: data.recorrido_vuelta,
@@ -128,11 +226,6 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                     strokeColor: '#0000FF',
                     strokeOpacity: 0.7,
                     strokeWeight: 5,
-                    /*icons: [{
-                      icon: lineSymbol,
-                      offset: '100%',
-                      repeat: '10%'
-                    }],*/
                   });
                 recorrido_ida.setMap(map);
                 recorrido_vuelta.setMap(map);

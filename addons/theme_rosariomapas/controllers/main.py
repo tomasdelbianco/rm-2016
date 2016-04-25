@@ -36,13 +36,13 @@ class website_rosariomapas(http.Controller):
         cr, uid, context, pool = request.cr, request.uid, request.context, request.registry
         query = """
             SELECT distinct map_latlng.polyline_id
-            from map_latlng
-            where
+            FROM map_latlng
+            WHERE
             SQRT(POW((69.1 * (latitude - %f)) , 2 ) + 
             POW((53 * (longitude - %f)), 2)) < 0.3 
             and map_latlng.polyline_id in (SELECT distinct map_latlng.polyline_id
-            from map_latlng
-            where
+            FROM map_latlng
+            WHERE
             SQRT(POW((69.1 * (latitude - %f)) , 2 ) + 
             POW((53 * (longitude - %f)), 2)) < 0.3)
         """ % (orig_lat, orig_lng, dest_lat, dest_lng)

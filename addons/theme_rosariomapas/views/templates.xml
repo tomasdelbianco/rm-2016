@@ -103,12 +103,18 @@
                             <form class="main-search border-less-inputs" role="form" method="post">
                                 <div class="input-row">
                                     <div class="form-group">
-                                        <select name="colectivos" title="Recorridos Colectivos" data-live-search="true">
-                                            <option value="0">Recorridos Colectivos</option>
+                                        <select name="colectivos" class="selectpicker show-tick" title="Recorridos Colectivos" data-live-search="true">
+                                            <option value="0" data-icon="fa fa-bus" style="display:none;">Buscar Colectivos</option>
+                                            <option data-icon="fa fa-search" value="buscar">Buscar por origen y destino</option>
                                             <t t-foreach="colectivos" t-as="colectivo">
-                                                <option t-attf-value="{{colectivo.id}}"><t t-esc="colectivo.name"/></option>
+                                                <option data-icon="fa fa-bus" t-attf-value="{{colectivo.id}}"><t t-esc="colectivo.name"/></option>
                                             </t>
                                         </select>
+                                        <div class="panel panel-buscar-ori-dst">
+                                            <input type="text" class="form-control" name="bus_origen" placeholder="Origen..."/>
+                                            <div class="divider"/>
+                                            <input type="text" class="form-control" name="bus_destino" placeholder="Destino..."/>
+                                        </div>
                                     </div>
                                     <!-- /.form-group -->
                                     <div class="form-group">
@@ -132,13 +138,9 @@
                                         <input type="text" class="form-control" id="keyword" placeholder="Buscar lugares o direcciones..."/>
                                     </div>
                                     <!-- /.form-group -->
-                                    <!-- /.form-group -->
+                                    
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-                                    </div>
-                                    <!-- /.form-group -->
-                                    <div class="form-group">
-                                        <button type="button" id="btn-buscacole" class="btn btn-default"><i class="fa fa-search"></i></button>
                                     </div>
                                     <!-- /.form-group -->
                                 </div>

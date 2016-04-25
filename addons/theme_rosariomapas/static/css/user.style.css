@@ -1,0 +1,23 @@
+.panel.panel-buscar-ori-dst{
+    position:relative;
+    border-radius: 0px !important;
+    margin-top: 3px;
+    width: 100%;
+    display:none;
+}
+
+.map-canvas .map .search-bar{
+    height:59px;
+}
+
+.bootstrap-select .dropdown-menu > .active > a{
+    color:#474747;
+}
+
+.btn.btn-default i, select.btn-default i{
+    color:#333;
+}
+
+.panel.panel-buscar-ori-dst > input:nth-child(1){
+    border-bottom: 1px solid #ddd;
+}
