@@ -48,74 +48,124 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
         var markerClicked = 0;
         var activeMarker = false;
         var lastClicked = false;
+        $(".main-search").submit(function(e){
+            return false;
+        });
+        
+        /* Busqueda de colectivos */
+        var geocoder = new google.maps.Geocoder;
+        var input_bus_origen = $("input[name='bus_origen']");
+        var input_bus_destino = $("input[name='bus_destino']");
         var recorrido_ida = false;
         var recorrido_vuelta = false;
-
-        /* Busqueda de colectivos */
-        var marker_bus_origen = new google.maps.Marker({
-            map: map,
-            anchorPoint: new google.maps.Point(0, -29)
-        });
-        var marker_bus_destino = new google.maps.Marker({
-            map: map,
-            anchorPoint: new google.maps.Point(0, -29)
-        });
-        var markers_cole = [];
-        function placeMarker(location) {
-            if (markers_cole.length < 2){
-                // Add circle overlay and bind to marker
-                /*var circle = new google.maps.Circle({
-                  map: map,
-                  radius: 482,    // 10 miles in metres
-                  strokeColor: '#FF0000',
-                  strokeOpacity: 0.8,
-                  strokeWeight: 0,
-                  fillColor: '#FF0000',
-                  fillOpacity: 0.15,
-                });*/
+        var event_map_click;
+        var marker_icon = {"bus_origen":"http://maps.google.com/mapfiles/ms/icons/red.png", "bus_destino":"http://maps.google.com/mapfiles/ms/icons/green.png"}
+        var marker_bus = {"bus_origen": false, "bus_destino": false};
+        
+        function placeMarker(location, desde) {
+            // Add circle overlay and bind to marker
+            /*var circle = new google.maps.Circle({
+              map: map,
+              radius: 482,    // 10 miles in metres
+              strokeColor: '#FF0000',
+              strokeOpacity: 0.8,
+              strokeWeight: 0,
+              fillColor: '#FF0000',
+              fillOpacity: 0.15,
+            });*/
+            if (marker_bus[desde] == false){
                 var marker = new google.maps.Marker({
                     position: location,
+                    icon:marker_icon[desde],
                     draggable: true,
                     map: map
                 });
                 google.maps.event.addListener(marker, "dragend", function(event) { 
-                    placeMarker();
-                }); 
-                markers_cole.push(marker);
-                /*circle.bindTo('center', marker, 'position');*/
-            }
-            if (markers_cole.length == 2){
-                openerp.jsonRpc("/rm/search_colectivo", 'call', {orig_lat:markers_cole[0].getPosition().lat(), orig_lng:markers_cole[0].getPosition().lng(), dest_lat:markers_cole[1].getPosition().lat(), dest_lng:markers_cole[1].getPosition().lng()}).then(function (data) {
-                    $("select[name='colectivos'] option").hide();
-                    $("select[name='colectivos'] option").prop('selected', false);
-                    $.each(data.resultado, function(c){
-                        var opt = $("select[name='colectivos'] option[value=" + String(data.resultado[c]) + "]").show()
-                        if (c == 0){
-                            $("select[name='colectivos']").val(data.resultado[c])
-                        }
-                    });
-                    $("select[name='colectivos'] option[value='buscar']").show();
-                    $("select[name='colectivos']").selectpicker('refresh');
-                    $("select[name='colectivos']").trigger('change');
+                    if (marker_bus["bus_origen"] !== false && marker_bus["bus_destino"] !== false){
+                        buscar_colectivo(marker_bus["bus_origen"].getPosition(), marker_bus["bus_destino"].getPosition());
+                    }
+                    var input = input_bus_origen;
+                    if (event.latLng.equals(marker_bus["bus_destino"].getPosition())){
+                        input = input_bus_destino;
+                    }
+                    reverse_geolocation(event.latLng, input);
                 });
+
+                marker_bus[desde] = marker;
+            }else{
+                marker_bus[desde].setPosition(location);
             }
+            if (marker_bus["bus_origen"] !== false && marker_bus["bus_destino"] !== false){
+                buscar_colectivo(marker_bus["bus_origen"].getPosition(), marker_bus["bus_destino"].getPosition())
+            }
+            if (marker_bus["bus_origen"] !== false && marker_bus["bus_destino"] == false){
+                setTimeout(function(){input_bus_destino.focus();}, 300);
+            }
+            reverse_geolocation(location, $("input[name='"+desde+"']"));
+            /*circle.bindTo('center', marker, 'position');*/
+            google.maps.event.removeListener(event_map_click);
         }
 
+        function reverse_geolocation(latLng, input){
+            geocoder.geocode({'location': latLng}, function(results, status) {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    if (results[1]) {
+                        input.val(results[0].formatted_address);
+                    }
+                }
+            });
+        }
+
+        function buscar_colectivo(origen, destino){
+            /* origen y destino: LatLng */
+            openerp.jsonRpc("/rm/search_colectivo", 'call', {orig_lat:origen.lat(), orig_lng:origen.lng(), dest_lat:destino.lat(), dest_lng:destino.lng()}).then(function (data) {
+                $("select[name='colectivos'] option").hide();
+                $("select[name='colectivos'] option").prop('selected', false);
+                $.each(data.resultado, function(c){
+                    var opt = $("select[name='colectivos'] option[value=" + String(data.resultado[c]) + "]").show()
+                    if (c == 0){
+                        $("select[name='colectivos']").val(data.resultado[c])
+                    }
+                });
+                $("select[name='colectivos'] option[value='buscar']").show();
+                $("select[name='colectivos']").selectpicker('refresh');
+                $("select[name='colectivos']").trigger('change');
+            });
+        }
+
+        var input_bus_selected = false;
         var busqueda_colectivo = false;
         $("select[name='colectivos']").on('change', function(c){
-            $(".panel-buscar-ori-dst").css('display','none');
+            /*$(".panel-buscar-ori-dst").css('display','none');*/
             var values = $("select[name='colectivos']").val();
             var col_id = parseInt(values);
             if (col_id == 0)
                 return;
             if (values === "buscar"){
-                var input_bus_origen = $("input[name='bus_origen']");
-                var input_bus_destino = $("input[name='bus_destino']");
-                
                 /* Inicializo campos de busqueda de colectivos por Origen y Destino */
                 if (!busqueda_colectivo){
                     busqueda_colectivo = true;
 
+                    input_bus_origen.on('focus', input_bus_focus);
+                    input_bus_destino.on('focus', input_bus_focus);
+                    function input_bus_focus(e){
+                        if ($(e.currentTarget).val().length > 0){
+                            $(e.currentTarget).select();
+                        }
+                        input_bus_selected = $(e.currentTarget);
+                        event_map_click = google.maps.event.addListener(map, 'mousedown', function(event) {
+                            placeMarker(event.latLng, input_bus_selected.attr('name'));
+                        });
+                        
+                    }
+
+                    input_bus_origen.on('blur', input_bus_blur);
+                    input_bus_destino.on('blur', input_bus_blur);
+                    function input_bus_blur(e){
+                        if (event_map_click)
+                            google.maps.event.removeListener(event_map_click);
+                    }
+                    
                     var defaultBounds = new google.maps.LatLngBounds(
                       new google.maps.LatLng(-33.08875, -60.836883),
                       new google.maps.LatLng(-32.726779, -60.431960));
@@ -129,77 +179,27 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                     var autocomplete_bus_origen = new google.maps.places.Autocomplete(input_bus_origen[0], options);
                     var autocomplete_bus_destino = new google.maps.places.Autocomplete(input_bus_destino[0], options);
 
-                    google.maps.event.addListener(map, 'click', function(event) {
-                       placeMarker(event.latLng);
-                    });
+                    autocomplete_bus_origen.addListener('place_changed', function(){autocomplete_changed(this, "bus_origen")});
+                    autocomplete_bus_destino.addListener('place_changed', function(){autocomplete_changed(this, "bus_destino")});
 
-                    autocomplete_bus_origen.addListener('place_changed', function() {
-                        var place = autocomplete_bus_origen.getPlace();
+                    function autocomplete_changed(place, desde) {
+                        console.log("Autocomplete changed", desde);
+                        var place = place.getPlace();
                         if (!place.geometry) {
                           return;
                         }
-
                         // If the place has a geometry, then present it on a map.
                         if (place.geometry.viewport) {
                           /*map.fitBounds(place.geometry.viewport);*/
                         } else {
-                          map.setCenter(place.geometry.location);
-                          map.setZoom(17);  // Why 17? Because it looks good.
+                            placeMarker(place.geometry.location, desde);
+                            map.setCenter(place.geometry.location);
+                            map.setZoom(16);  // Why 16? Because it looks good.
                         }
-                        marker_bus_origen.setIcon(/** @type {google.maps.Icon} */({
-                          url: place.icon,
-                          size: new google.maps.Size(71, 71),
-                          origin: new google.maps.Point(0, 0),
-                          anchor: new google.maps.Point(17, 34),
-                          scaledSize: new google.maps.Size(35, 35)
-                        }));
-                        marker_bus_origen.setPosition(place.geometry.location);
-                        marker_bus_origen.setVisible(true);
-
-                        var address = '';
-                        if (place.address_components) {
-                          address = [
-                            (place.address_components[0] && place.address_components[0].short_name || ''),
-                            (place.address_components[1] && place.address_components[1].short_name || ''),
-                            (place.address_components[2] && place.address_components[2].short_name || '')
-                          ].join(' ');
-                        }
-                    });
-
-                    autocomplete_bus_destino.addListener('place_changed', function() {
-                        var place = autocomplete_bus_destino.getPlace();
-                        if (!place.geometry) {
-                          return;
-                        }
-
-                        // If the place has a geometry, then present it on a map.
-                        if (place.geometry.viewport) {
-                          /*map.fitBounds(place.geometry.viewport);*/
-                        } else {
-                          map.setCenter(place.geometry.location);
-                          map.setZoom(17);  // Why 17? Because it looks good.
-                        }
-                        marker_bus_destino.setIcon(/** @type {google.maps.Icon} */({
-                          url: place.icon,
-                          size: new google.maps.Size(71, 71),
-                          origin: new google.maps.Point(0, 0),
-                          anchor: new google.maps.Point(17, 34),
-                          scaledSize: new google.maps.Size(35, 35)
-                        }));
-                        marker_bus_destino.setPosition(place.geometry.location);
-                        marker_bus_destino.setVisible(true);
-
-                        var address = '';
-                        if (place.address_components) {
-                          address = [
-                            (place.address_components[0] && place.address_components[0].short_name || ''),
-                            (place.address_components[1] && place.address_components[1].short_name || ''),
-                            (place.address_components[2] && place.address_components[2].short_name || '')
-                          ].join(' ');
-                        }
-                    });
+                    }
                 }
                 $(".panel-buscar-ori-dst").css('display','block');
+                setTimeout(function(){input_bus_origen.focus();}, 200);
                 return;
             }
             openerp.jsonRpc("/rm/get_recorrido", 'call', {colectivo_id:col_id}).then(function (data) {

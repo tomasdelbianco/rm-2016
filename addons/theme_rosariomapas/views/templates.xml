@@ -111,9 +111,15 @@
                                             </t>
                                         </select>
                                         <div class="panel panel-buscar-ori-dst">
-                                            <input type="text" class="form-control" name="bus_origen" placeholder="Origen..."/>
+                                            <div class="inner-addon left-addon">
+                                                <i class="glyphicon glyphicon-map-marker color-red"></i>
+                                                <input type="text" class="form-control" name="bus_origen" placeholder="Origen..."/>
+                                            </div>
                                             <div class="divider"/>
-                                            <input type="text" class="form-control" name="bus_destino" placeholder="Destino..."/>
+                                            <div class="inner-addon left-addon">
+                                                <i class="glyphicon glyphicon-map-marker color-green"></i>
+                                                <input type="text" class="form-control" name="bus_destino" placeholder="Destino..."/>
+                                            </div>
                                         </div>
                                     </div>
                                     <!-- /.form-group -->
@@ -175,7 +181,6 @@
         <template id="script_mapa" name="Script Mapa">
             <script type="text/javascript" src="/theme_rosariomapas/static/js/before.load.js"></script>
             <script type="text/javascript" src="/theme_rosariomapas/static/js/jquery-migrate-1.2.1.min.js"></script>
-            <script type="text/javascript" src="/theme_rosariomapas/static/js/smoothscroll.js"></script>
             <script type="text/javascript" src="/theme_rosariomapas/static/js/bootstrap-select.min.js"></script>
             <script type="text/javascript" src="/theme_rosariomapas/static/js/jquery.hotkeys.js"></script>
             <script type="text/javascript" src="/theme_rosariomapas/static/js/jquery.nouislider.all.min.js"></script>
