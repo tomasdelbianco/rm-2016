@@ -120,7 +120,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
             /* origen y destino: LatLng */
             openerp.jsonRpc("/rm/search_colectivo", 'call', {orig_lat:origen.lat(), orig_lng:origen.lng(), dest_lat:destino.lat(), dest_lng:destino.lng()}).then(function (data) {
                 $("select[name='colectivos'] option").hide();
-                $("select[name='colectivos'] option").prop('selected', false);
+                $("select[name='colectivos']").selectpicker('deselectAll');
                 $.each(data.resultado, function(c){
                     var opt = $("select[name='colectivos'] option[value=" + String(data.resultado[c]) + "]").show()
                     if (c == 0){
@@ -130,6 +130,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                 $("select[name='colectivos'] option[value='buscar']").show();
                 $("select[name='colectivos']").selectpicker('refresh');
                 $("select[name='colectivos']").trigger('change');
+                $("select[name='colectivos']").selectpicker('toggle');
             });
         }
 
