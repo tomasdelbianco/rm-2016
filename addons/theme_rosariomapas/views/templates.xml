@@ -111,6 +111,7 @@
                                             </t>
                                         </select>
                                         <div class="panel panel-buscar-ori-dst">
+                                            <a href="#"><i class="btn-cerrar glyphicon glyphicon-remove"></i></a>
                                             <div class="inner-addon left-addon">
                                                 <i class="glyphicon glyphicon-map-marker color-red"></i>
                                                 <input type="text" class="form-control" name="bus_origen" placeholder="Escriba el origen o haga click en el mapa..."/>

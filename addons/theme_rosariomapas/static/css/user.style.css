@@ -49,3 +49,24 @@
 .color-green{
     color:green;
 }
+
+.panel.panel-buscar-ori-dst:hover .btn-cerrar{
+    opacity: 0.9;
+    filter: alpha(opacity=90); /* For IE8 and earlier */
+}
+
+.panel.panel-buscar-ori-dst .btn-cerrar{
+    position: absolute;
+    z-index: 10;
+    right: 4px;
+    top: 10px;
+    background: white;
+    padding: 4px;
+    color:#ddd;
+    opacity: 0.8;
+    filter: alpha(opacity=80); /* For IE8 and earlier */
+}
+
+.panel.panel-buscar-ori-dst .btn-cerrar:hover{
+    color: #999;
+}

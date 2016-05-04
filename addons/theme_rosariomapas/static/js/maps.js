@@ -133,9 +133,24 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                 $("select[name='colectivos']").selectpicker('toggle');
             });
         }
+        
+        function cerrar_busqueda_colectivo(){
+            $("select[name='colectivos']").selectpicker('deselectAll');
+            $("select[name='colectivos']").val(0);
+            $("select[name='colectivos']").selectpicker('refresh');
+            $(".panel-buscar-ori-dst").fadeOut();
+            input_bus_origen.val("");
+            input_bus_destino.val("");
+            /*
+                Hacer que desaparezcan los markers
+             */
+        }
 
         var input_bus_selected = false;
         var busqueda_colectivo = false;
+        $(".panel.panel-buscar-ori-dst .btn-cerrar").on('click', function(e){
+            cerrar_busqueda_colectivo();
+        });
         $("select[name='colectivos']").on('change', function(c){
             /*$(".panel-buscar-ori-dst").css('display','none');*/
             var values = $("select[name='colectivos']").val();
@@ -187,7 +202,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                         console.log("Autocomplete changed", desde);
                         var place = place.getPlace();
                         if (!place.geometry) {
-                          return;
+                            return;
                         }
                         // If the place has a geometry, then present it on a map.
                         if (place.geometry.viewport) {
@@ -199,7 +214,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                         }
                     }
                 }
-                $(".panel-buscar-ori-dst").css('display','block');
+                $(".panel-buscar-ori-dst").fadeIn();
                 setTimeout(function(){input_bus_origen.focus();}, 200);
                 return;
             }
