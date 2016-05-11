@@ -1,5 +1,10 @@
+.wrapper-buscar-ori-dst{
+    position: relative;
+    width: 100%;
+}
+
 .panel.panel-buscar-ori-dst{
-    position:relative;
+    position:absolute;
     border-radius: 0px !important;
     margin-top: 3px;
     width: 100%;
@@ -51,8 +56,7 @@
 }
 
 .panel.panel-buscar-ori-dst:hover .btn-cerrar{
-    opacity: 0.9;
-    filter: alpha(opacity=90); /* For IE8 and earlier */
+    color:rgb(199, 199, 199);
 }
 
 .panel.panel-buscar-ori-dst .btn-cerrar{
@@ -63,8 +67,6 @@
     background: white;
     padding: 4px;
     color:#ddd;
-    opacity: 0.8;
-    filter: alpha(opacity=80); /* For IE8 and earlier */
 }
 
 .panel.panel-buscar-ori-dst .btn-cerrar:hover{

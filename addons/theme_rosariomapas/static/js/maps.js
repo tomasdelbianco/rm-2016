@@ -124,7 +124,8 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                 $.each(data.resultado, function(c){
                     var opt = $("select[name='colectivos'] option[value=" + String(data.resultado[c]) + "]").show()
                     if (c == 0){
-                        $("select[name='colectivos']").val(data.resultado[c])
+                        $("select[name='colectivos']").val(data.resultado[c]);
+                        $("select[name='colectivos']").trigger("change");
                     }
                 });
                 $("select[name='colectivos'] option[value='buscar']").show();
@@ -133,17 +134,34 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                 $("select[name='colectivos']").selectpicker('toggle');
             });
         }
+
+        function clear_recorridos(){
+            if (recorrido_ida !== false){
+                recorrido_ida.setMap(null);
+                recorrido_ida = false;
+            }
+            if (recorrido_vuelta !== false){
+                recorrido_vuelta.setMap(null);
+                recorrido_vuelta = false;
+            }
+        }
         
         function cerrar_busqueda_colectivo(){
-            $("select[name='colectivos']").selectpicker('deselectAll');
-            $("select[name='colectivos']").val(0);
+            $("select[name='colectivos'] option").show();
+            $("select[name='colectivos'] option[value='0']").hide();
+            if (isNaN(parseInt($("select[name='colectivos']").val()))){
+                $("select[name='colectivos']").selectpicker('deselectAll');
+                $("select[name='colectivos']").val(0);
+                $("select[name='colectivos']").trigger('change');
+
+            }
             $("select[name='colectivos']").selectpicker('refresh');
-            $(".panel-buscar-ori-dst").fadeOut();
-            input_bus_origen.val("");
-            input_bus_destino.val("");
-            /*
-                Hacer que desaparezcan los markers
-             */
+            $(".panel-buscar-ori-dst").fadeOut("fast", function(){
+                input_bus_origen.val("");
+                input_bus_origen.trigger("change");
+                input_bus_destino.val("");
+                input_bus_destino.trigger("change");
+            });
         }
 
         var input_bus_selected = false;
@@ -155,12 +173,29 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
             /*$(".panel-buscar-ori-dst").css('display','none');*/
             var values = $("select[name='colectivos']").val();
             var col_id = parseInt(values);
-            if (col_id == 0)
+            if (col_id == 0){
+                clear_recorridos();
                 return;
+            }
             if (values === "buscar"){
                 /* Inicializo campos de busqueda de colectivos por Origen y Destino */
                 if (!busqueda_colectivo){
                     busqueda_colectivo = true;
+                    input_bus_origen.off('change');
+                    input_bus_destino.off('change');
+                    input_bus_origen.on('change', function(e){
+                        if (!input_bus_origen.val() && marker_bus['bus_origen']){
+                            marker_bus['bus_origen'].setMap(null);
+                            marker_bus['bus_origen'] = false;
+                        }
+                    });
+                    input_bus_destino.on('change', function(e){
+                        if (!input_bus_destino.val() && marker_bus['bus_destino']){
+                            marker_bus['bus_destino'].setMap(null);
+                            marker_bus['bus_destino'] = false;
+                        }
+                    });
+
 
                     input_bus_origen.on('focus', input_bus_focus);
                     input_bus_destino.on('focus', input_bus_focus);
@@ -199,7 +234,6 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                     autocomplete_bus_destino.addListener('place_changed', function(){autocomplete_changed(this, "bus_destino")});
 
                     function autocomplete_changed(place, desde) {
-                        console.log("Autocomplete changed", desde);
                         var place = place.getPlace();
                         if (!place.geometry) {
                             return;
@@ -214,21 +248,17 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                         }
                     }
                 }
-                $(".panel-buscar-ori-dst").fadeIn();
-                setTimeout(function(){input_bus_origen.focus();}, 200);
+                $(".panel-buscar-ori-dst").fadeIn("fast", function(){
+                    input_bus_origen.focus();
+                });
+                clear_recorridos();
                 return;
             }
             openerp.jsonRpc("/rm/get_recorrido", 'call', {colectivo_id:col_id}).then(function (data) {
-                if (recorrido_ida !== false){
-                    recorrido_ida.setMap(null);
-                }
-                if (recorrido_vuelta !== false){
-                    recorrido_vuelta.setMap(null);
-                }
                 var lineSymbol = {
                     path: google.maps.SymbolPath.FORWARD_OPEN_ARROW
                 };
-
+                clear_recorridos();
                 recorrido_ida = new google.maps.Polyline({
                     path: data.recorrido_ida,
                     geodesic: true,
@@ -246,13 +276,18 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                 recorrido_ida.setMap(map);
                 recorrido_vuelta.setMap(map);
                 var bounds = new google.maps.LatLngBounds();
-                var path_1 = recorrido_ida.getPath();
-                var path_2 = recorrido_vuelta.getPath();
-                for (var i = 0; i < path_1.getLength(); i++) {
-                    bounds.extend(path_1.getAt(i));
-                }
-                for (var i = 0; i < path_2.getLength(); i++) {
-                    bounds.extend(path_2.getAt(i));
+                if (marker_bus.bus_origen && marker_bus.bus_destino){
+                    bounds.extend(marker_bus.bus_origen.getPosition());
+                    bounds.extend(marker_bus.bus_destino.getPosition());
+                }else{
+                    var path_1 = recorrido_ida.getPath();
+                    var path_2 = recorrido_vuelta.getPath();
+                    for (var i = 0; i < path_1.getLength(); i++) {
+                        bounds.extend(path_1.getAt(i));
+                    }
+                    for (var i = 0; i < path_2.getLength(); i++) {
+                        bounds.extend(path_2.getAt(i));
+                    }
                 }
                 map.fitBounds(bounds);
             });
