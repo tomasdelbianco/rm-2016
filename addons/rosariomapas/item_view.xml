@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- Transporte Urbano -->
+        <menuitem id="menu_item" parent="" name="Items" sequence="10"/>
+        <menuitem id="submenu_item" parent="menu_item" name="Items" sequence="10"/>
+        <!-- <menuitem id="herramientas_tup" parent="menu_tup" name="Items" sequence="99"/> -->
+
+        <!-- ITEMS -->
+        <record model="ir.ui.view" id="item_item_form_view">
+            <field name="name">Formulario de Items</field>
+            <field name="model">item.item</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Formulario de Items" version="7.0">
+                    <header>
+                        <!-- <button name="btn_acomodar_categorias" type="object" string="Acomodar categorias"/> -->
+                    </header>
+                    <sheet>
+                        <h1>
+                            <field name="name" placeholder="Nombre"/>
+                        </h1>
+                        <group>
+                            <group>
+                                <field name="categoria_id"/>
+                                <field name="direccion"/>
+                                <field name="telefono"/>
+                                <field name="web_url"/>
+                                <field name="url"/>
+                                <field name="plan"/>
+                            </group>
+                            <group>
+                                <field name="visitas"/>
+                                <field name="latlng_id"/>
+                                <field name="latitud"/>
+                                <field name="longitud"/>
+                                <field name="active"/>
+                                <field name="publicado"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Descripcion">
+                                <field name="descripcion" nolabel="1"/>
+                            </page>
+                            <page string="Fotos">
+                                <field name="foto_ids" nolabel="1"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="item_item_tree_view">
+            <field name="name">Listado de Items</field>
+            <field name="model">item.item</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Listado de Items" version="7.0">
+                    <field name="name"/>
+                    <field name="categoria_id"/>
+                    <field name="direccion"/>
+                    <field name="telefono"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="item_item_search_view" >
+            <field name="name">Filtro de Items</field>
+            <field name="model">item.item</field>
+            <field name="type">search</field>      
+            <field name="arch" type="xml">
+                <search string="Buscar ">
+                    <!--<filter name='state' string="Excluir borradores" domain="[('state', '!=', 'draft')]" icon="terp-go-week"/>-->
+                    <separator/>
+                    <!--<field name="name" filter_domain="[('name', 'ilike', self)]"/>-->
+                    <group expand="0" string="Agrupar por...">
+                        <!--<filter string="Nombre" domain="[]" context="{'group_by':'name'}" icon="terp-personal"/>-->
+                    </group>
+               </search>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_item_item">
+            <field name="name">Items</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">item.item</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="item_item_tree_view"/>
+            <field name="search_view_id" ref="item_item_search_view"/>
+        </record>
+        
+        <menuitem id="menu_item_item" parent="submenu_item" sequence="10" action="action_item_item"/>
+        
+        <!-- CATEGORIAS -->
+        <record model="ir.ui.view" id="item_categoria_form_view">
+            <field name="name">Formulario de Categorías</field>
+            <field name="model">item.categoria</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Formulario de Categorías" version="7.0">
+                    <header>
+                        <!-- <button name="acomodar_keywords" type="object" string="Acomodar keywords"/>
+                        <button name="acomodar_parents" type="object" string="Acomodar parents"/> -->
+                    </header>
+                    <sheet>
+                        <h1>
+                            <field name="name" placeholder="Nombre"/>
+                        </h1>
+                        <group>
+                            <group>
+                                <field name="parent_id"/>
+                                <field name="url"/>
+                            </group>
+                            <group>    
+                                <field name="keyword_ids" widget="many2many_tags"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Descripción">
+                                <field name="descripcion" nolabel="1"/>
+                            </page>
+                            <page string="Subcategorías" attrs="{'invisible':[('subcategoria_ids','=',[])]}">
+                                <field name="subcategoria_ids" nolabel="1"/>
+                            </page>
+                            <page string="Items" attrs="{'invisible':[('item_ids','=',[])]}">
+                                <field name="item_ids" nolabel="1"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="item_categoria_tree_view">
+            <field name="name">Listado de Categorías</field>
+            <field name="model">item.categoria</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Listado de Categorías" version="7.0">
+                    <field name="name"/>
+                    <field name="parent_id"/>
+                    <field name="url"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="item_categoria_search_view" >
+            <field name="name">Filtro de Categorías</field>
+            <field name="model">item.categoria</field>
+            <field name="type">search</field>      
+            <field name="arch" type="xml">
+                <search string="Buscar ">
+                    <!--<filter name='state' string="Excluir borradores" domain="[('state', '!=', 'draft')]" icon="terp-go-week"/>-->
+                    <separator/>
+                    <!--<field name="name" filter_domain="[('name', 'ilike', self)]"/>-->
+                    <group expand="0" string="Agrupar por...">
+                        <!--<filter string="Nombre" domain="[]" context="{'group_by':'name'}" icon="terp-personal"/>-->
+                    </group>
+               </search>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_item_categoria">
+            <field name="name">Categorías</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">item.categoria</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="item_categoria_tree_view"/>
+            <field name="domain">[]</field>
+            <field name="search_view_id" ref="item_categoria_search_view"/>
+        </record>
+        
+        <menuitem id="menu_item_categoria" parent="submenu_item" sequence="10" action="action_item_categoria"/>
+
+    </data>
+</openerp>

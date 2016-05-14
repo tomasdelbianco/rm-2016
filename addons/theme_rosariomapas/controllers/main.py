@@ -14,9 +14,11 @@ class website_rosariomapas(http.Controller):
     @http.route(['/','/page/homepage'], type='http', auth="public", website=True)
     def index(self, **kw):
         Colectivos = http.request.env['tup.colectivo']
-        
+        Categorias = http.request.env['item.categoria']
+
         return http.request.render('website.homepage', {
-            'colectivos': Colectivos.search([('recorrido_id','!=',False), ('recorrido_id.polyline_ida_id', '!=', False), ('recorrido_id.polyline_vuelta_id', '!=', False)], order="name")
+            'colectivos': Colectivos.search([('recorrido_id','!=',False), ('recorrido_id.polyline_ida_id', '!=', False), ('recorrido_id.polyline_vuelta_id', '!=', False)], order="name"),
+            'categorias': Categorias.search([('parent_id','=',False)])
         })
 
     @http.route(['/rm/get_recorrido'], type='json', auth="public", methods=['POST'], website=True)
