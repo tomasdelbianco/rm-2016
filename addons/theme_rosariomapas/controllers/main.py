@@ -21,6 +21,39 @@ class website_rosariomapas(http.Controller):
             'categorias': Categorias.search([('parent_id','=',False)])
         })
 
+    @http.route(['/rm/search_items'], type='json', auth="public", methods=['POST'], website=True)
+    def search_items(self, categorias, texto=False, **kw):
+        Items = http.request.env['item.item']
+        resultado = []
+        if categorias and type(categorias) is list:
+            for item in Items.search([('categoria_id','in',categorias)]):
+                resultado.append({
+                    'id':item.id,
+                    'category': 'bar_restaurant',
+                    'title':item.name,
+                    'location':item.direccion,
+                    'latitude':item.latitud,
+                    'longitude':item.longitud,
+                    'url':"",
+                    'type':"Restaurant",
+                    "type_icon": "/theme_rosariomapas/static/icons/store/apparel/umbrella-2.png",
+                    "rating": 4,
+                    "gallery": [],
+                    "features":[],
+                    "date_created": "2014-11-03",
+                    # "price": "$2500",
+                    "featured": 0,
+                    "color": "",
+                    "person_id": 1,
+                    "year": 1980,
+                    "special_offer": 0,
+                    "item_specific":{},
+                    "description": item.descripcion,
+                    # "last_review": "Curabitur odio nibh, luctus non pulvinar a, ultricies ac diam. Donec neque massa, viverra interdum eros ut, imperdiet",
+                    # "last_review_rating": 5
+                })
+        return {'data':resultado}
+
     @http.route(['/rm/get_recorrido'], type='json', auth="public", methods=['POST'], website=True)
     def get_recorrido(self, colectivo_id, **kw):
         cr, uid, context, pool = request.cr, request.uid, request.context, request.registry

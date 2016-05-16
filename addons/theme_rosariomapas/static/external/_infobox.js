@@ -1,5 +1,5 @@
 function drawInfobox(category, infoboxContent, json, i){
-
+    
     if(json.data[i].color)          { var color = json.data[i].color }
         else                        { color = '' }
     if( json.data[i].price )        { var price = '<div class="price">' + json.data[i].price +  '</div>' }
@@ -14,22 +14,22 @@ function drawInfobox(category, infoboxContent, json, i){
         else                        { title = '' }
     if(json.data[i].location)       { var location = json.data[i].location }
         else                        { location = '' }
-    if(json.data[i].gallery[0])     { var gallery = json.data[i].gallery[0] }
-        else                        { gallery[0] = '../img/default-item.jpg' }
+    /*if(json.data[i].gallery[0])     { var gallery = json.data[i].gallery[0] }
+        else                        { gallery[0] = '../img/default-item.jpg' }*/
 
     var ibContent = '';
     ibContent =
     '<div class="infobox ' + color + '">' +
         '<div class="inner">' +
             '<div class="image">' +
-                '<div class="item-specific">' + drawItemSpecific(category, json, i) + '</div>' +
+                /*'<div class="item-specific">' + drawItemSpecific(category, json, i) + '</div>' +
                 '<div class="overlay">' +
                     '<div class="wrapper">' +
                         '<a href="#" class="quick-view" data-toggle="modal" data-target="#modal" id="' + id + '">Quick View</a>' +
                         '<hr>' +
                         '<a href="' + url +  '" class="detail">Go to Detail</a>' +
                     '</div>' +
-                '</div>' +
+                '</div>' +*/
                 '<a href="' + url +  '" class="description">' +
                     '<div class="meta">' +
                         price +
@@ -38,7 +38,8 @@ function drawInfobox(category, infoboxContent, json, i){
                         '<i class="fa fa-angle-right"></i>' +
                     '</div>' +
                 '</a>' +
-                '<img src="' + gallery +  '">' +
+                /*'<img src="' + gallery +  '">' +*/
+                '<div style="height:20px;background-color:#FF513F;"></div>' +
             '</div>' +
         '</div>' +
     '</div>';

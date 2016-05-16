@@ -23,6 +23,18 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
     $.get("/theme_rosariomapas/static/external/_infobox.js", function() {
         gMap();
     });
+    // Here we redefine the set() method.
+    // If it is called for map option, we hide the InfoWindow, if "noSuppress"  
+    // option is not true. As Google Maps does not know about this option,  
+    // its InfoWindows will not be opened.
+    var set = google.maps.InfoWindow.prototype.set;
+    google.maps.InfoWindow.prototype.set = function (key, val) {
+        if (key === 'map' && ! this.get('noSuppress')) {
+            return;
+        }
+
+        set.apply(this, arguments);
+    }
     function gMap(){
         var mapCenter = new google.maps.LatLng(_latitude,_longitude);
         var mapOptions = {
@@ -45,6 +57,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
         var mapElement = document.getElementById('map');
         var map = new google.maps.Map(mapElement, mapOptions);
         var newMarkers = [];
+        var markerCluster;
         var markerClicked = 0;
         var activeMarker = false;
         var lastClicked = false;
@@ -293,166 +306,240 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
             });
         });
         
-        for (var i = 0; i < json.data.length; i++) {
-
-            // Google map marker content -----------------------------------------------------------------------------------
-
-            if( json.data[i].color ) var color = json.data[i].color;
-            else color = '';
-
-            var markerContent = document.createElement('DIV');
-            if( json.data[i].featured == 1 ) {
-                markerContent.innerHTML =
-                    '<div class="map-marker featured' + color + '">' +
-                        '<div class="icon">' +
-                        '<img src="' + json.data[i].type_icon +  '">' +
-                        '</div>' +
-                    '</div>';
-            }
-            else {
-                markerContent.innerHTML =
-                    '<div class="map-marker ' + json.data[i].color + '">' +
-                        '<div class="icon">' +
-                        '<img src="' + json.data[i].type_icon +  '">' +
-                        '</div>' +
-                    '</div>';
-            }
-
-            // Create marker on the map ------------------------------------------------------------------------------------
-
-            var marker = new RichMarker({
-                position: new google.maps.LatLng( json.data[i].latitude, json.data[i].longitude ),
-                map: map,
-                draggable: false,
-                content: markerContent,
-                flat: true
-            });
-
-            newMarkers.push(marker);
-
-            // Create infobox for marker -----------------------------------------------------------------------------------
-
-            var infoboxContent = document.createElement("div");
-            var infoboxOptions = {
-                content: infoboxContent,
-                disableAutoPan: false,
-                pixelOffset: new google.maps.Size(-18, -42),
-                zIndex: null,
-                alignBottom: true,
-                boxClass: "infobox",
-                enableEventPropagation: true,
-                closeBoxMargin: "0px 0px -30px 0px",
-                closeBoxURL: "/theme_rosariomapas/static/img/close.png",
-                infoBoxClearance: new google.maps.Size(1, 1)
-            };
-
-            // Infobox HTML element ----------------------------------------------------------------------------------------
-
-            var category = json.data[i].category;
-            infoboxContent.innerHTML = drawInfobox(category, infoboxContent, json, i);
-
-            // Create new markers ------------------------------------------------------------------------------------------
-
-            newMarkers[i].infobox = new InfoBox(infoboxOptions);
-
-            // Show infobox after click ------------------------------------------------------------------------------------
-
-            google.maps.event.addListener(marker, 'click', (function(marker, i) {
-                return function() {
-                    google.maps.event.addListener(map, 'click', function(event) {
-                        lastClicked = newMarkers[i];
-                    });
-                    activeMarker = newMarkers[i];
-                    if( activeMarker != lastClicked ){
-                        for (var h = 0; h < newMarkers.length; h++) {
-                            newMarkers[h].content.className = 'marker-loaded';
-                            newMarkers[h].infobox.close();
-                        }
-                        newMarkers[i].infobox.open(map, this);
-                        newMarkers[i].infobox.setOptions({ boxClass:'fade-in-marker'});
-                        newMarkers[i].content.className = 'marker-active marker-loaded';
-                        markerClicked = 1;
-                    }
-                }
-            })(marker, i));
-
-            // Fade infobox after close is clicked -------------------------------------------------------------------------
-
-            google.maps.event.addListener(newMarkers[i].infobox, 'closeclick', (function(marker, i) {
-                return function() {
-                    activeMarker = 0;
-                    newMarkers[i].content.className = 'marker-loaded';
-                    newMarkers[i].infobox.setOptions({ boxClass:'fade-out-marker' });
-                }
-            })(marker, i));
-        }
-
-        // Close infobox after click on map --------------------------------------------------------------------------------
-
-        google.maps.event.addListener(map, 'click', function(event) {
-            if( activeMarker != false && lastClicked != false ){
-                if( markerClicked == 1 ){
-                    activeMarker.infobox.open(map);
-                    activeMarker.infobox.setOptions({ boxClass:'fade-in-marker'});
-                    activeMarker.content.className = 'marker-active marker-loaded';
-                }
-                else {
-                    markerClicked = 0;
-                    activeMarker.infobox.setOptions({ boxClass:'fade-out-marker' });
-                    activeMarker.content.className = 'marker-loaded';
-                    setTimeout(function() {
-                        activeMarker.infobox.close();
-                    }, 350);
-                }
-                markerClicked = 0;
-            }
-            if( activeMarker != false ){
-                google.maps.event.addListener(activeMarker, 'click', function(event) {
-                    markerClicked = 1;
+        $("select[name='category']").change(function(e){
+            var categorias = _.map($(this).val(), function(id){ return parseInt(id); });
+            if (categorias){
+                openerp.jsonRpc("/rm/search_items", 'call', {categorias:categorias}).then(function(data){
+                    mostrar_items(data);
                 });
             }
-            markerClicked = 0;
         });
 
-        // Create marker clusterer -----------------------------------------------------------------------------------------
-
-        var clusterStyles = [
-            {
-                url: '/theme_rosariomapas/static/img/cluster.png',
-                height: 34,
-                width: 34
+        var evento_mapa_cierra_markers;
+        var evento_mapa_idle;
+        var markers_by_id = {};
+        var $singleItem;
+        function clearMarkers(){
+            if (newMarkers && newMarkers.length){
+                for (var m = 0; m < newMarkers.length; m++){
+                    google.maps.event.clearListeners(newMarkers[m], 'click');
+                    google.maps.event.clearListeners(newMarkers[m].infobox, 'closeclick');
+                    newMarkers[m].setMap(null);
+                }
+                newMarkers.length = 0;
+                markers_by_id = {};
             }
-        ];
-
-        var markerCluster = new MarkerClusterer(map, newMarkers, { styles: clusterStyles, maxZoom: 19 });
-        markerCluster.onClick = function(clickedClusterIcon, sameLatitude, sameLongitude) {
-            return multiChoice(sameLatitude, sameLongitude, json);
-        };
-
-        // Dynamic loading markers and data from JSON ----------------------------------------------------------------------
-
-        google.maps.event.addListener(map, 'idle', function() {
-            var visibleArray = [];
+            if (markerCluster){
+                markerCluster.clearMarkers();
+            }
+            if ($singleItem){
+                $singleItem.unbind('mouseenter mouseleave');
+            }
+            if (activeMarker){
+                markerClicked = 0;
+                activeMarker.infobox.setOptions({ boxClass:'fade-out-marker' });
+                activeMarker.content.className = 'marker-loaded';
+                setTimeout(function() {
+                    activeMarker.infobox.close();
+                }, 350);
+            }
+        }
+        
+        function mostrar_items(json){
+            
+            clearMarkers();
+            
             for (var i = 0; i < json.data.length; i++) {
-                if ( map.getBounds().contains(newMarkers[i].getPosition()) ){
-                    visibleArray.push(newMarkers[i]);
-                    $.each( visibleArray, function (i) {
-                        setTimeout(function(){
-                            if ( map.getBounds().contains(visibleArray[i].getPosition()) ){
-                                if( !visibleArray[i].content.className ){
-                                    visibleArray[i].setMap(map);
-                                    visibleArray[i].content.className += 'bounce-animation marker-loaded';
-                                    markerCluster.repaint();
-                                }
+
+                // Google map marker content -----------------------------------------------------------------------------------
+
+                if( json.data[i].color ) var color = json.data[i].color;
+                else color = '';
+
+                var markerContent = document.createElement('DIV');
+                if( json.data[i].featured == 1 ) {
+                    markerContent.innerHTML =
+                        '<div class="map-marker featured' + color + '">' +
+                            '<div class="icon">' +
+                            '<img src="' + json.data[i].type_icon +  '">' +
+                            '</div>' +
+                        '</div>';
+                }
+                else {
+                    markerContent.innerHTML =
+                        '<div class="map-marker ' + json.data[i].color + '">' +
+                            '<div class="icon">' +
+                            '<img src="' + json.data[i].type_icon +  '">' +
+                            '</div>' +
+                        '</div>';
+                }
+
+                // Create marker on the map ------------------------------------------------------------------------------------
+
+                var marker = new RichMarker({
+                    position: new google.maps.LatLng( json.data[i].latitude, json.data[i].longitude ),
+                    map: map,
+                    draggable: false,
+                    content: markerContent,
+                    flat: true
+                });
+
+                newMarkers.push(marker);
+                markers_by_id[json.data[i].id] = marker;
+                // Create infobox for marker -----------------------------------------------------------------------------------
+
+                var infoboxContent = document.createElement("div");
+                var infoboxOptions = {
+                    content: infoboxContent,
+                    disableAutoPan: false,
+                    pixelOffset: new google.maps.Size(-18, -42),
+                    zIndex: null,
+                    alignBottom: true,
+                    boxClass: "infobox",
+                    enableEventPropagation: true,
+                    closeBoxMargin: "7px 9px -30px 0px",
+                    closeBoxURL: "/theme_rosariomapas/static/img/close_chico.png",
+                    infoBoxClearance: new google.maps.Size(1, 1)
+                };
+
+                // Infobox HTML element ----------------------------------------------------------------------------------------
+
+                var category = json.data[i].category;
+                infoboxContent.innerHTML = drawInfobox(category, infoboxContent, json, i);
+
+                // Create new markers ------------------------------------------------------------------------------------------
+
+                newMarkers[i].infobox = new InfoBox(infoboxOptions);
+
+                // Show infobox after click ------------------------------------------------------------------------------------
+
+                google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                    return function() {
+                        google.maps.event.addListener(map, 'click', function(event) {
+                            lastClicked = newMarkers[i];
+                        });
+                        activeMarker = newMarkers[i];
+                        if( activeMarker != lastClicked ){
+                            for (var h = 0; h < newMarkers.length; h++) {
+                                newMarkers[h].content.className = 'marker-loaded';
+                                newMarkers[h].infobox.close();
                             }
-                        }, i * 50);
+                            newMarkers[i].infobox.open(map, this);
+                            newMarkers[i].infobox.setOptions({ boxClass:'fade-in-marker'});
+                            newMarkers[i].content.className = 'marker-active marker-loaded';
+                            markerClicked = 1;
+                        }
+                    }
+                })(marker, i));
+
+                // Fade infobox after close is clicked -------------------------------------------------------------------------
+
+                google.maps.event.addListener(newMarkers[i].infobox, 'closeclick', (function(marker, i) {
+                    return function() {
+                        activeMarker = 0;
+                        newMarkers[i].content.className = 'marker-loaded';
+                        newMarkers[i].infobox.setOptions({ boxClass:'fade-out-marker' });
+                    }
+                })(marker, i));
+            }
+
+            // Close infobox after click on map --------------------------------------------------------------------------------
+            if (evento_mapa_cierra_markers){
+                google.maps.event.removeListener(evento_mapa_cierra_markers);
+            }
+            evento_mapa_cierra_markers = google.maps.event.addListener(map, 'click', function(event) {
+                if( activeMarker != false && lastClicked != false ){
+                    if( markerClicked == 1 ){
+                        activeMarker.infobox.open(map);
+                        activeMarker.infobox.setOptions({ boxClass:'fade-in-marker'});
+                        activeMarker.content.className = 'marker-active marker-loaded';
+                    }
+                    else {
+                        markerClicked = 0;
+                        activeMarker.infobox.setOptions({ boxClass:'fade-out-marker' });
+                        activeMarker.content.className = 'marker-loaded';
+                        setTimeout(function() {
+                            activeMarker.infobox.close();
+                        }, 350);
+                    }
+                    markerClicked = 0;
+                }
+                if( activeMarker != false ){
+                    google.maps.event.addListener(activeMarker, 'click', function(event) {
+                        markerClicked = 1;
                     });
-                } else {
-                    newMarkers[i].content.className = '';
-                    newMarkers[i].setMap(null);
+                }
+                markerClicked = 0;
+            });
+
+            // Create marker clusterer -----------------------------------------------------------------------------------------
+
+            var clusterStyles = [
+                {
+                    url: '/theme_rosariomapas/static/img/cluster.png',
+                    height: 34,
+                    width: 34
+                }
+            ];
+
+            markerCluster = new MarkerClusterer(map, newMarkers, { styles: clusterStyles, maxZoom: 16, gridSize:50 });
+            markerCluster.onClick = function(clickedClusterIcon, sameLatitude, sameLongitude) {
+                return multiChoice(sameLatitude, sameLongitude, json);
+            };
+
+            // Dynamic loading markers and data from JSON ----------------------------------------------------------------------
+            if (evento_mapa_idle){
+                google.maps.event.removeListener(evento_mapa_idle);
+            }
+            evento_mapa_idle = google.maps.event.addListener(map, 'idle', function() {
+                var visibleArray = [];
+                for (var i = 0; i < json.data.length; i++) {
+                    if ( map.getBounds().contains(newMarkers[i].getPosition()) ){
+                        visibleArray.push(newMarkers[i]);
+                        $.each( visibleArray, function (i) {
+                            setTimeout(function(){
+                                if ( map.getBounds().contains(visibleArray[i].getPosition()) ){
+                                    if( !visibleArray[i].content.className ){
+                                        visibleArray[i].setMap(map);
+                                        visibleArray[i].content.className += 'bounce-animation marker-loaded';
+                                        markerCluster.repaint();
+                                    }
+                                }
+                            }, i * 50);
+                        });
+                    } else {
+                        newMarkers[i].content.className = '';
+                        newMarkers[i].setMap(null);
+                    }
+                }
+                redraw_listitems(json);
+            });
+
+            function is_cached(src, a) {
+                var image = new Image();
+                var loadedImage = $('.results li #' + json.data[a].id + ' .image');
+                image.src = src;
+                if( image.complete ){
+                    $(".results").each(function() {
+                        loadedImage.removeClass('loading');
+                        loadedImage.addClass('loaded');
+                    });
+                }
+                else {
+                    $(".results").each(function() {
+                        $('.results li #' + json.data[a].id + ' .image').addClass('loading');
+                    });
+                    $(image).load(function(){
+                        loadedImage.removeClass('loading');
+                        loadedImage.addClass('loaded');
+                    });
                 }
             }
+            redraw_listitems(json);
+            redrawMap('google', map);
+        }
 
+        function redraw_listitems(json){
             var visibleItemsArray = [];
             $.each(json.data, function(a) {
                 if( map.getBounds().contains( new google.maps.LatLng( json.data[a].latitude, json.data[a].longitude ) ) ) {
@@ -462,53 +549,29 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
             });
 
             // Create list of items in Results sidebar ---------------------------------------------------------------------
-
             $('.items-list .results').html( visibleItemsArray );
 
             // Check if images are cached, so will not be loaded again
 
-            $.each(json.data, function(a) {
+            /*$.each(json.data, function(a) {
                 if( map.getBounds().contains( new google.maps.LatLng( json.data[a].latitude, json.data[a].longitude ) ) ) {
                     is_cached(json.data[a].gallery[0], a);
                 }
-            });
+            });*/
 
             // Call Rating function ----------------------------------------------------------------------------------------
 
             rating('.results .item');
 
-            var $singleItem = $('.results .item');
+            $singleItem = $('.results .item');
             $singleItem.hover(
                 function(){
-                    newMarkers[ $(this).attr('id') - 1 ].content.className = 'marker-active marker-loaded';
+                    markers_by_id[$(this).attr('id')].content.className = 'marker-active marker-loaded';
                 },
                 function() {
-                    newMarkers[ $(this).attr('id') - 1 ].content.className = 'marker-loaded';
+                    markers_by_id[$(this).attr('id')].content.className = 'marker-loaded';
                 }
             );
-        });
-
-        redrawMap('google', map);
-
-        function is_cached(src, a) {
-            var image = new Image();
-            var loadedImage = $('.results li #' + json.data[a].id + ' .image');
-            image.src = src;
-            if( image.complete ){
-                $(".results").each(function() {
-                    loadedImage.removeClass('loading');
-                    loadedImage.addClass('loaded');
-                });
-            }
-            else {
-                $(".results").each(function() {
-                    $('.results li #' + json.data[a].id + ' .image').addClass('loading');
-                });
-                $(image).load(function(){
-                    loadedImage.removeClass('loading');
-                    loadedImage.addClass('loaded');
-                });
-            }
         }
 
         // Geolocation of user -----------------------------------------------------------------------------------------
@@ -839,14 +902,14 @@ function pushItemsToArray(json, a, category, visibleItemsArray){
     visibleItemsArray.push(
         '<li>' +
             '<div class="item" id="' + json.data[a].id + '">' +
-                '<a href="#" class="image">' +
+                /*'<a href="#" class="image">' +
                     '<div class="inner">' +
                         '<div class="item-specific">' +
                             drawItemSpecific(category, json, a) +
                         '</div>' +
                         '<img src="' + json.data[a].gallery[0] + '" alt="">' +
                     '</div>' +
-                '</a>' +
+                '</a>' +*/
                 '<div class="wrapper">' +
                     '<a href="#" id="' + json.data[a].id + '"><h3>' + json.data[a].title + '</h3></a>' +
                     '<figure>' + json.data[a].location + '</figure>' +

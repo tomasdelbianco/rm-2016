@@ -4469,7 +4469,7 @@ body.map-fullscreen #map {
   animation: fadeInMarker .3s;
 }
 .fade-in-marker > img {
-  z-index: 1;
+  z-index: 999;
 }
 
 @keyframes fadeInMarker {
