@@ -13,6 +13,57 @@ from openerp.tools.safe_eval import safe_eval as eval
 import logging
 _logger = logging.getLogger(__name__)
 
+import os
+
+class item_icon(models.Model):
+    # Variables
+    _name = "item.icon"
+    _rec_name = "path"
+    # Metodos de campos
+
+    # Campos
+    name = fields.Char('Nombre', size=45)
+    categoria = fields.Char('Categoria', size=45)
+    subcategoria = fields.Char('Subcategoria', size=45)
+    path = fields.Char('Ruta', size=128)
+
+    @api.multi
+    def cargar_iconos(self):
+        print "CARGAR ICONOS"
+        
+        for categ in os.listdir("./rosariomapas/static/icons"):
+            for subcateg in os.listdir("./rosariomapas/static/icons/%s"%categ):
+                path = "./rosariomapas/static/icons/%s/%s"%(categ,subcateg)
+                if os.path.isdir(path):
+                    for icon in os.listdir(path):
+                        print path + "/" + icon
+                        self.create({'name':icon, 'path':path+"/"+icon, 'categoria':categ, 'subcategoria':subcateg})
+                elif os.path.isfile(path):
+                    print path
+                    self.create({'name':subcateg, 'path':path, 'categoria':categ})
+        # path = "./static/icons"
+        # for root, dirs, files in os.walk(path):
+        #     print dirs, files
+            # for name in files:
+            #     print name
+                # if name.endswith((".html", ".htm")):
+                    # whatever
+    
+
+    _sql_constraints = [
+        
+    ]
+
+    # Constraints
+
+    # Metodos on_change
+
+    # Metodos heredados del orm
+
+    # Metodos generales
+
+item_icon()
+
 class item_tag(models.Model):
     # Variables
     _name = "item.tag"
@@ -54,7 +105,7 @@ class item_categoria(models.Model):
     parent_id_externo = fields.Integer('ID Parent Anterior', size=8)
     item_ids = fields.One2many('item.item', 'categoria_id', 'Items')
     subcategoria_ids = fields.One2many('item.categoria', 'parent_id', 'Subcategorías')
-        
+    icon_id = fields.Many2one('item.icon', 'Icono')
     active = fields.Boolean('Activo', default=True)
 
 

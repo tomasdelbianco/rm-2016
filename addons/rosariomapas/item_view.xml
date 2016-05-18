@@ -113,6 +113,7 @@
                             <group>
                                 <field name="parent_id"/>
                                 <field name="url"/>
+                                <field name="icon_id" widget="widget_icon_m2o"/>
                             </group>
                             <group>    
                                 <field name="keyword_ids" widget="many2many_tags"/>
@@ -176,6 +177,78 @@
         </record>
         
         <menuitem id="menu_item_categoria" parent="submenu_item" sequence="10" action="action_item_categoria"/>
+
+
+        <!-- Iconos -->
+        <record model="ir.ui.view" id="item_icon_form_view">
+            <field name="name">Formulario de Iconos</field>
+            <field name="model">item.icon</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Formulario de Iconos" version="7.0">
+                    <header>
+                        <button name="cargar_iconos" type="object" string="Cargar Iconos"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="path"/>
+                            </group>
+                            <group>
+                                <field name="categoria"/>
+                                <field name="subcategoria"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <footer>
+        
+                    </footer>
+                </form>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="item_icon_tree_view">
+            <field name="name">Listado de Iconos</field>
+            <field name="model">item.icon</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Listado de Iconos" version="7.0">
+                    <field name="name"/>
+                    <field name="categoria"/>
+                    <field name="subcategoria"/>
+                    <field name="path"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="item_icon_search_view" >
+            <field name="name">Filtro de Iconos</field>
+            <field name="model">item.icon</field>
+            <field name="type">search</field>      
+            <field name="arch" type="xml">
+                <search string="Buscar ">
+                    <!--<filter name='state' string="Excluir borradores" domain="[('state', '!=', 'draft')]" icon="terp-go-week"/>-->
+                    <separator/>
+                    <!--<field name="name" filter_domain="[('name', 'ilike', self)]"/>-->
+                    <group expand="0" string="Agrupar por...">
+                        <!--<filter string="Nombre" domain="[]" context="{'group_by':'name'}" icon="terp-personal"/>-->
+                    </group>
+               </search>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_item_icon">
+            <field name="name">Iconos</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">item.icon</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="item_icon_tree_view"/>
+            <field name="search_view_id" ref="item_icon_search_view"/>
+        </record>
+        
+        <menuitem id="menu_item_icon" parent="submenu_item" sequence="10" action="action_item_icon"/>
 
     </data>
 </openerp>

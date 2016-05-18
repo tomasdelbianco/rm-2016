@@ -13,5 +13,6 @@
         'transporte_view.xml',
         'item_view.xml',
         'wizard/importar_kml_view.xml',
+        'views/views.xml'
     ],
 }
