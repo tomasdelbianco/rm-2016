@@ -159,6 +159,30 @@ class item_foto(models.Model):
 
 item_foto()
 
+class item_caracteristica(models.Model):
+    # Variables
+    _name = "item.caracteristica"    
+
+    # Metodos de campos
+
+    # Campos
+    name = fields.Char('Nombre', size=128)
+    descripcion = fields.Text('Descripción')
+
+    _sql_constraints = [
+        
+    ]
+
+    # Constraints
+
+    # Metodos on_change
+
+    # Metodos heredados del orm
+
+    # Metodos generales
+
+item_caracteristica()
+
 class item_item(models.Model):
     # Variables
     _name = "item.item"
@@ -186,6 +210,8 @@ class item_item(models.Model):
     publicado = fields.Boolean('Publicado')
     latitud = fields.Char('Latitud', size=45)
     longitud = fields.Char('Longitud', size=45)
+    puntuacion = fields.Selection([('1','Mal'), ('2', 'Regular'), ('3', 'Bueno'), ('4', 'Muy Bueno'), ('5', 'Excelente!') ], 'Puntuación')
+    caracteristica_ids = fields.Many2many('item.caracteristica', 'item_caracteristica_rel', 'item_id', 'caracteristica_id', 'Características')
         
         
 

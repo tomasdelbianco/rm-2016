@@ -15,7 +15,7 @@
             <field name="arch" type="xml">
                 <form string="Formulario de Items" version="7.0">
                     <header>
-                        <!-- <button name="btn_acomodar_categorias" type="object" string="Acomodar categorias"/> -->
+                        <button name="btn_acomodar_categorias" type="object" string="Acomodar categorias"/>
                     </header>
                     <sheet>
                         <h1>
@@ -102,8 +102,8 @@
             <field name="arch" type="xml">
                 <form string="Formulario de Categorías" version="7.0">
                     <header>
-                        <!-- <button name="acomodar_keywords" type="object" string="Acomodar keywords"/>
-                        <button name="acomodar_parents" type="object" string="Acomodar parents"/> -->
+                        <button name="acomodar_keywords" type="object" string="Acomodar keywords"/>
+                        <button name="acomodar_parents" type="object" string="Acomodar parents"/>
                     </header>
                     <sheet>
                         <h1>

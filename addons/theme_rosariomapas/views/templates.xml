@@ -16,7 +16,7 @@
 
         <template id="rm_header" inherit_id="website.layout" name="Header RosarioMapas">
             <xpath expr="//body" position="replace">
-                <body onunload="" class="map-fullscreen page-homepage navigation-off-canvas" id="page-top">
+                <body onunload="" t-attf-class="{{body_classes}}" id="page-top">
                     
                 <!-- Outer Wrapper-->
                 <div id="outer-wrapper">
@@ -54,6 +54,159 @@
                 <!-- end Outer Wrapper-->
                 </body>
             </xpath>
+        </template>
+
+        <template id="item" name="Item">
+            <!-- Page Canvas-->
+            <div id="page-canvas">
+                <!--Page Content-->
+                <div id="page-content">
+
+                    <div id="map-detail"></div>
+                    <section class="container">
+                        <div class="row">
+                            <!--Item Detail Content-->
+                            <div class="col-md-9">
+                                <section class="block" id="main-content">
+                                    <header class="page-title">
+                                        <div class="title">
+                                            <h1><t t-esc="item_id.name"/></h1>
+                                            <figure><t t-esc="item_id.direccion"/></figure>
+                                        </div>
+                                        <div class="info">
+                                            <div class="type">
+                                                <i><img src="/theme_rosariomapas/static/icons/restaurants-bars/restaurants/restaurant.png" alt=""/></i>
+                                                <span><t t-esc="item_id.categoria_id.name"/></span>
+                                            </div>
+                                        </div>
+                                    </header>
+                                    <div class="row">
+                                        <!--Detail Sidebar-->
+                                        <aside class="col-md-4 col-sm-4" id="detail-sidebar">
+                                            <!--Contact-->
+                                            <section>
+                                                <header><h3>Contacto</h3></header>
+                                                <address>
+                                                    <div><t t-esc="item_id.name"/></div>
+                                                    <div><t t-esc="item_id.direccion"/></div>
+                                                    <div>Rosario, Santa Fe, Argentina</div>
+                                                    <figure t-if="item_id.telefono or item_id.web_url">
+<!--                                                         <div class="info">
+                                                            <i class="fa fa-mobile"></i>
+                                                            <span>818-832-5258</span>
+                                                        </div> -->
+                                                        <div t-if="item_id.telefono" class="info">
+                                                            <i class="fa fa-phone"></i>
+                                                            <span><t t-esc="item_id.telefono"/></span>
+                                                        </div>
+                                                        <div t-if="item_id.web_url" class="info">
+                                                            <i class="fa fa-globe"></i>
+                                                            <a href="#"><t t-esc="item_id.web_url"/></a>
+                                                        </div>
+                                                    </figure>
+                                                </address>
+                                            </section>
+                                            <!--end Contact-->
+                                            <!--Rating-->
+                                            <section t-if="item_id.puntuacion" class="clearfix">
+                                                <header class="pull-left"><a href="#reviews" class="roll"><h3>Puntuación</h3></a></header>
+                                                <figure class="rating big pull-right" t-attf-data-rating="item_id.puntuacion"></figure>
+                                            </section>
+                                            <!--end Rating-->
+                                        </aside>
+                                        <!--end Detail Sidebar-->
+                                        <!--Content-->
+                                        <div class="col-md-8 col-sm-8">
+                                            <section>
+                                                <article t-if="item_id.foto_ids" class="item-gallery">
+                                                    <div class="owl-carousel item-slider">
+                                                        <t t-foreach="item_id.foto_ids" t-as="foto">
+                                                            <div class="slide"><img t-attf-src="/website/image/item.foto/{{ foto.id }}/foto/555x415" t-attf-data-hash="{{foto_index}}" t-attf-alt="{{foto.name}}"/></div>
+                                                        </t>
+                                                    </div>
+                                                    <!-- /.item-slider -->
+                                                    <div class="thumbnails">
+                                                        <span class="expand-content btn framed icon" data-expand="#gallery-thumbnails" >Más<i class="fa fa-plus"></i></span>
+                                                        <div class="expandable-content height collapsed show-70" id="gallery-thumbnails">
+                                                            <div class="content">
+                                                                <t t-foreach="item_id.foto_ids" t-as="foto">
+                                                                    <a t-attf-href="##{foto_index}" t-attf-id="thumbnail-{{foto_index}}" class="active"><img t-attf-src="/website/image/item.foto/{{ foto.id }}/foto/85x65" t-attf-alt="{{foto.name}}"/></a>
+                                                                </t>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </article>
+                                                <!-- /.item-gallery -->
+                                                <article t-if="item_id.descripcion" class="block">
+                                                    <header><h2>Descripción</h2></header>
+                                                    <p>
+                                                        <t t-raw="item_id.descripcion"/>
+                                                    </p>
+                                                </article>
+                                                <!-- /.block -->
+                                                <article t-if="item_id.caracteristica_ids" class="block">
+                                                    <header><h2>Características</h2></header>
+                                                    <ul class="bullets">
+                                                        <t t-foreach="item_id.caracteristica_ids" t-as="caracteristica">
+                                                            <li><t t-esc="caracteristica.name"/></li>
+                                                        </t>
+                                                    </ul>
+                                                </article>
+                                                <!-- /.block -->
+                                                <!-- <article class="block">
+                                                    <header><h2>Opening Hours</h2></header>
+                                                    <dl class="lines">
+                                                        <dt>Monday</dt>
+                                                        <dd>08:00 am - 11:00 pm</dd>
+                                                        <dt>Tuesday</dt>
+                                                        <dd>08:00 am - 11:00 pm</dd>
+                                                        <dt>Wednesday</dt>
+                                                        <dd>08:00 am - 11:00 pm</dd>
+                                                        <dt>Thursday</dt>
+                                                        <dd>08:00 am - 11:00 pm</dd>
+                                                        <dt>Friday</dt>
+                                                        <dd>08:00 am - 11:00 pm</dd>
+                                                        <dt>Saturday</dt>
+                                                        <dd>08:00 am - 11:00 pm</dd>
+                                                    </dl>
+                                                </article> -->
+                                                <!-- /.block -->
+                                            </section>
+                                            <!--end Review Form-->
+                                        </div>
+                                        <!-- /.col-md-8-->
+                                    </div>
+                                    <!-- /.row -->
+                                </section>
+                                <!-- /#main-content-->
+                            </div>
+                            <!-- /.col-md-8-->
+                            <!--Sidebar-->
+                            <div class="col-md-3">
+                                <aside id="sidebar">
+                                    <section>
+                                        <a href="#"><img src="assets/img/ad-banner-sidebar.png" alt=""/></a>
+                                    </section>
+                                    <section>
+                                        <header><h2>Categorías</h2></header>
+                                        <ul class="bullets">
+                                            <t t-foreach="categorias" t-as="categoria">
+                                                <li t-attf-value="{{categoria.id}}"><a href="#"><t t-esc="categoria.name"/></a></li>
+                                            </t>
+                                        </ul>
+                                    </section>
+                                </aside>
+                                <!-- /#sidebar-->
+                            </div>
+                            <!-- /.col-md-3-->
+                            <!--end Sidebar-->
+                        </div><!-- /.row-->
+                    </section>
+                    <!-- /.container-->
+                </div>
+                <!-- end Page Content-->
+            </div>
+            <!-- end Page Canvas-->
         </template>
 
         <template id="canvas_mapa" name="Mapa">

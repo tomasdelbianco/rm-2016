@@ -21,6 +21,16 @@ class website_rosariomapas(http.Controller):
             'categorias': Categorias.search([('parent_id','=',False)])
         })
 
+    @http.route(['/<int:item_id>/<string:web_url>.htm'], type='http', auth="public", website=True)
+    def item(self, item_id=False, web_url=False, **post):
+        Categorias = http.request.env['item.categoria']
+        Items = http.request.env['item.item']
+        item = Items.browse(item_id)
+        return http.request.render("website.item", {
+            'item_id':item,
+            'categorias':Categorias.search([('parent_id','=',False)]),
+        })
+
     @http.route(['/rm/search_items'], type='json', auth="public", methods=['POST'], website=True)
     def search_items(self, categorias, texto=False, **kw):
         Items = http.request.env['item.item']
