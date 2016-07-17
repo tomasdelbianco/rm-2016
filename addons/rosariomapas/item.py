@@ -212,7 +212,11 @@ class item_item(models.Model):
     longitud = fields.Char('Longitud', size=45)
     puntuacion = fields.Selection([('1','Mal'), ('2', 'Regular'), ('3', 'Bueno'), ('4', 'Muy Bueno'), ('5', 'Excelente!') ], 'Puntuación')
     caracteristica_ids = fields.Many2many('item.caracteristica', 'item_caracteristica_rel', 'item_id', 'caracteristica_id', 'Características')
-        
+    
+    @api.multi
+    def btn_acomodar_url(self):
+        for item in self.search([]):
+            item.url = str(item.id) + "/" + item.url.split("/")[1]
         
 
     _sql_constraints = [

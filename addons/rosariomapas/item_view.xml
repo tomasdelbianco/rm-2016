@@ -16,6 +16,7 @@
                 <form string="Formulario de Items" version="7.0">
                     <header>
                         <button name="btn_acomodar_categorias" type="object" string="Acomodar categorias"/>
+                        <button name="btn_acomodar_url" type="object" string="Acomodar url"/>
                     </header>
                     <sheet>
                         <h1>

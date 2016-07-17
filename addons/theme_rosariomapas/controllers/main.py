@@ -44,7 +44,7 @@ class website_rosariomapas(http.Controller):
                     'location':item.direccion,
                     'latitude':item.latitud,
                     'longitude':item.longitud,
-                    'url':"",
+                    'url':item.url,
                     'type': item.categoria_id.name,
                     "type_icon": item.categoria_id.icon_id.path or "/theme_rosariomapas/static/icons/store/apparel/umbrella-2.png",
                     "rating": 4,

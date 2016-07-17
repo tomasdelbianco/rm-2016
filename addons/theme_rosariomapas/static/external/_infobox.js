@@ -6,7 +6,7 @@ function drawInfobox(category, infoboxContent, json, i){
         else                        { price = '' }
     if(json.data[i].id)             { var id = json.data[i].id }
         else                        { id = '' }
-    if(json.data[i].url)            { var url = json.data[i].url }
+    if(json.data[i].url)            { var url = json.data[i].url;}
         else                        { url = '' }
     if(json.data[i].type)           { var type = json.data[i].type }
         else                        { type = '' }
@@ -30,7 +30,7 @@ function drawInfobox(category, infoboxContent, json, i){
                         '<a href="' + url +  '" class="detail">Go to Detail</a>' +
                     '</div>' +
                 '</div>' +*/
-                '<a href="' + url +  '" class="description">' +
+                '<a href="/' + url +  '" class="description">' +
                     '<div class="meta">' +
                         price +
                         '<h2>' + title +  '</h2>' +

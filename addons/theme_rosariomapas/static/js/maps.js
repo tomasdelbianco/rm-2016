@@ -405,6 +405,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                 // Infobox HTML element ----------------------------------------------------------------------------------------
 
                 var category = json.data[i].category;
+                console.log(json);
                 infoboxContent.innerHTML = drawInfobox(category, infoboxContent, json, i);
 
                 // Create new markers ------------------------------------------------------------------------------------------
