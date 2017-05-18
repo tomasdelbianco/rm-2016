@@ -2,7 +2,6 @@
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import time
-from openerp.addons import funciones
 from openerp import models, fields, api, _
 from openerp.exceptions import except_orm, Warning, RedirectWarning, ValidationError
 from openerp.tools import float_compare
