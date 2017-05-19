@@ -217,7 +217,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                             $(e.currentTarget).select();
                         }
                         input_bus_selected = $(e.currentTarget);
-                        event_map_click = google.maps.event.addListener(map, 'mousedown', function(event) {
+                        event_map_click = google.maps.event.addListener(map, 'click', function(event) {
                             placeMarker(event.latLng, input_bus_selected.attr('name'));
                         });
                         
