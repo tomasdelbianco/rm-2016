@@ -19,7 +19,7 @@ if( $body.hasClass('map-fullscreen') ) {
 // Homepage map - Google
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function createHomepageGoogleMap(_latitude,_longitude,json){
+function createHomepageGoogleMap(_latitude,_longitude,json, action){
     $.get("/theme_rosariomapas/static/external/_infobox.js", function() {
         gMap();
     });
@@ -267,6 +267,10 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                 clear_recorridos();
                 return;
             }
+            mostrar_colectivo(col_id);
+        });
+        
+        function mostrar_colectivo(col_id){
             openerp.jsonRpc("/rm/get_recorrido", 'call', {colectivo_id:col_id}).then(function (data) {
                 var lineSymbol = {
                     path: google.maps.SymbolPath.FORWARD_OPEN_ARROW
@@ -304,7 +308,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                 }
                 map.fitBounds(bounds);
             });
-        });
+        }
         
         $("select[name='category']").change(function(e){
             var categorias = _.map($(this).val(), function(id){ return parseInt(id); });
@@ -623,6 +627,14 @@ function createHomepageGoogleMap(_latitude,_longitude,json){
                 }
             });
 
+        }
+
+        /* INIT */
+        console.log("GMAP", json);
+        if (json && action.action == "mostrar_recorrido" && action.colectivo_id){
+            $("select[name='colectivos']").val(action.colectivo_id);
+            $("select[name='colectivos']").trigger("change");
+            //$("select[name='colectivos']")
         }
 
         // Autocomplete address ----------------------------------------------------------------------------------------

@@ -82,10 +82,11 @@ class tup_colectivo(models.Model):
     empresa_tup_id = fields.Many2one('res.partner', 'Empresa', domain=[('es_empresa_tup','=',True)])
     recorrido_id = fields.Many2one('tup.recorrido', 'Recorrido activo')
     recorrido_ids = fields.One2many('tup.recorrido', 'colectivo_id', 'Recorridos')
+    url = fields.Char('URL', size=64) # Ej: recorrido/[112-negra.htm] <---
     active = fields.Boolean('Activo', default=True)
-        
-
+     
     _sql_constraints = [
+        ('url_uniq', 'unique(url)', 'La URL ya existe!'),
         ('name_uniq','unique(name)', 'El colectivo ya existe'),
     ]
 

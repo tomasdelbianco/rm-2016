@@ -260,7 +260,7 @@
                                             <option value="0" data-icon="fa fa-bus" style="display:none;">Buscar Colectivos</option>
                                             <option data-icon="fa fa-search" value="buscar">Buscar por origen y destino</option>
                                             <t t-foreach="colectivos" t-as="colectivo">
-                                                <option data-icon="fa fa-bus" t-attf-value="{{colectivo.id}}"><t t-esc="colectivo.name"/></option>
+                                                <option data-icon="fa fa-bus" t-attf-value="{{colectivo.id}}" t-att-selected="'selected' if (colectivo_id and (colectivo.id == colectivo_id.id)) else None"><t t-esc="colectivo.name"/></option>
                                             </t>
                                         </select>
                                         <div class="wrapper-buscar-ori-dst">
@@ -348,9 +348,12 @@
             <script>
                 var _latitude = -32.9347224;
                 var _longitude = -60.6694245;
-                var json = {'data':[]}
-                createHomepageGoogleMap(_latitude,_longitude, json);
-
+                var json = {'data':[] };
+                var home_action = { 
+                    'action': 'mostrar_recorrido',
+                    'colectivo_id' : <t t-esc="colectivo_id.id"/>,
+                };
+                createHomepageGoogleMap(_latitude,_longitude, json, home_action);
             </script>
 
             <!--[if lte IE 9]>

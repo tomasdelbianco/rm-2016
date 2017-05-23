@@ -53,6 +53,7 @@
                             </group>
                             <group>
                                 <field name="recorrido_id" domain="[('colectivo_id','=',id)]"/>
+                                <field name="url"/>
                             </group>
                         </group>
                         <label for="recorrido_ids"/>
