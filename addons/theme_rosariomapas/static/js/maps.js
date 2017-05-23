@@ -227,7 +227,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json, action){
                     input_bus_destino.on('blur', input_bus_blur);
                     function input_bus_blur(e){
                         if (event_map_click)
-                            google.maps.event.removeListener(event_map_click);
+                            setTimeout(function(){ google.maps.event.removeListener(event_map_click)}, 200);
                     }
                     
                     var defaultBounds = new google.maps.LatLngBounds(
@@ -307,6 +307,9 @@ function createHomepageGoogleMap(_latitude,_longitude,json, action){
                     }
                 }
                 map.fitBounds(bounds);
+                if (data && data.url){
+                    window.history.pushState({},"", "/recorrido/"+data.url);
+                }
             });
         }
         

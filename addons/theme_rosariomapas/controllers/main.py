@@ -85,7 +85,7 @@ class website_rosariomapas(http.Controller):
             recorrido_ida.append({'lat':punto.latitude, 'lng': punto.longitude})
         for punto2 in colectivo.recorrido_id.polyline_vuelta_id.latlng_ids:
             recorrido_vuelta.append({'lat':punto2.latitude, 'lng': punto2.longitude})
-        return {'recorrido_ida':recorrido_ida, 'recorrido_vuelta':recorrido_vuelta}
+        return {'recorrido_ida':recorrido_ida, 'recorrido_vuelta':recorrido_vuelta, 'url': colectivo.url}
 
     @http.route(['/rm/search_colectivo'], type='json', auth="public", methods=['POST'], website=True)
     def search_colectivo(self, orig_lat, orig_lng, dest_lat, dest_lng, **kw):
