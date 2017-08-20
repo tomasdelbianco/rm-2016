@@ -215,7 +215,7 @@ class item_item(models.Model):
     @api.multi
     def btn_acomodar_url(self):
         for item in self.search([]):
-            item.url = str(item.id) + "/" + item.url.split("/")[1]
+            item.url = item.url.split("/")[1]
         
 
     _sql_constraints = [

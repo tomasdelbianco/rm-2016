@@ -634,7 +634,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json, action){
 
         /* INIT */
         console.log("GMAP", json);
-        if (json && action.action == "mostrar_recorrido" && action.colectivo_id){
+        if (json && action && action.action == "mostrar_recorrido" && action.colectivo_id){
             $("select[name='colectivos']").val(action.colectivo_id);
             $("select[name='colectivos']").trigger("change");
             //$("select[name='colectivos']")

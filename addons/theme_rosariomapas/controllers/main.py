@@ -22,15 +22,22 @@ class website_rosariomapas(http.Controller):
         })
 
     @http.route(['/<int:item_id>/<string:web_url>.htm'], type='http', auth="public", website=True)
+    def item_old(self, item_id=False, web_url=False, **post):
+        Categorias = http.request.env['item.categoria']
+        Items = http.request.env['item.item']
+        item = Items.search([('id_externo','=',item_id)])
+        if item:
+            return werkzeug.utils.redirect("/%s-%s"%(item.id, item.url.split("/")[1]), 301)
+    
+    @http.route(['/<int:item_id>-<string:web_url>'], type="http", auth="public", website=True)
     def item(self, item_id=False, web_url=False, **post):
         Categorias = http.request.env['item.categoria']
         Items = http.request.env['item.item']
         item = Items.browse(item_id)
         return http.request.render("website.item", {
-            'item_id':item,
-            'categorias':Categorias.search([('parent_id','=',False)]),
+            'item_id': item,
+            'categorias': Categorias.search([('parent_id','=',False)]),
         })
-
     @http.route(['/recorrido/<string:web_url>'], type='http', auth="public", website=True)
     def recorrido(self, web_url=False, **post):
         Colectivos = http.request.env['tup.colectivo']

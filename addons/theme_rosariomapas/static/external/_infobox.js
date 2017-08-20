@@ -6,7 +6,7 @@ function drawInfobox(category, infoboxContent, json, i){
         else                        { price = '' }
     if(json.data[i].id)             { var id = json.data[i].id }
         else                        { id = '' }
-    if(json.data[i].url)            { var url = json.data[i].url;}
+    if(json.data[i].url)            { var url = json.data[i].id + "-" + json.data[i].url.split("/")[1]; }
         else                        { url = '' }
     if(json.data[i].type)           { var type = json.data[i].type }
         else                        { type = '' }
