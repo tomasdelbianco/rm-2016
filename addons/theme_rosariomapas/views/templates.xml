@@ -351,10 +351,10 @@
                 var json = {'data':[] };
                 var home_action;
                 <t t-if="colectivo_id">
-                    home_action = {
-                        'action': 'mostrar_recorrido',
-                        'colectivo_id' : <t t-esc="colectivo_id.id"/>,
-                    };
+                home_action = {
+                    'action': 'mostrar_recorrido',
+                    'colectivo_id' : <t t-esc="colectivo_id.id"/>,
+                };
                 </t>
                 createHomepageGoogleMap(_latitude,_longitude, json, home_action);
             </script>
