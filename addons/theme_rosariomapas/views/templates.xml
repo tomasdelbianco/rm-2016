@@ -214,7 +214,7 @@
             <div id="page-canvas">
                 <!--Off Canvas Navigation-->
                 <nav class="off-canvas-navigation">
-                    <header>Navigation</header>
+                    <header>Menú</header>
                     <div class="main-navigation navigation-off-canvas">
                         <ul class="nav navbar-nav navbar-right" id="top_menu">
                             <t t-foreach="website.menu_id.child_id" t-as="submenu">
