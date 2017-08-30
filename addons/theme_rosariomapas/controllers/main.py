@@ -51,7 +51,7 @@ class website_rosariomapas(http.Controller):
         })
 
     @http.route(['/recorridos-colectivos'], type='http', auth="public", website=True)
-    def recorrido(self, web_url=False, **post):
+    def recorrido(self, **post):
         Colectivos = http.request.env['tup.colectivo']
         Categorias = http.request.env['item.categoria']
         return http.request.render("website.recorridos_colectivos", {
