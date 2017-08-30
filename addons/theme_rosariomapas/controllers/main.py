@@ -38,6 +38,7 @@ class website_rosariomapas(http.Controller):
             'item_id': item,
             'categorias': Categorias.search([('parent_id','=',False)]),
         })
+    
     @http.route(['/recorrido/<string:web_url>'], type='http', auth="public", website=True)
     def recorrido(self, web_url=False, **post):
         Colectivos = http.request.env['tup.colectivo']
@@ -47,6 +48,15 @@ class website_rosariomapas(http.Controller):
             'colectivos': Colectivos.search([('recorrido_id','!=',False), ('recorrido_id.polyline_ida_id', '!=', False), ('recorrido_id.polyline_vuelta_id', '!=', False)], order="name"),
             'categorias': Categorias.search([('parent_id','=',False)]),
             'colectivo_id': colectivo_id,
+        })
+
+    @http.route(['/recorridos-colectivos'], type='http', auth="public", website=True)
+    def recorrido(self, web_url=False, **post):
+        Colectivos = http.request.env['tup.colectivo']
+        Categorias = http.request.env['item.categoria']
+        return http.request.render("website.recorridos_colectivos", {
+            'colectivos': Colectivos.search([('recorrido_id','!=',False), ('recorrido_id.polyline_ida_id', '!=', False), ('recorrido_id.polyline_vuelta_id', '!=', False)], order="name"),
+            'categorias': Categorias.search([('parent_id','=',False)]),
         })
 
     @http.route(['/rm/search_items'], type='json', auth="public", methods=['POST'], website=True)

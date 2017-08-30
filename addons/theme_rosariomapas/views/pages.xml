@@ -2,7 +2,7 @@
 <openerp>
     <data>
 
-        <template id="website.homepage" name="Homepage" page="True">
+        <template id="website.homepage" name="Mapa de Rosario" page="True">
             <t t-set="body_classes">map-fullscreen page-homepage navigation-off-canvas</t>
             <t t-call="website.layout">
                 <div class="oe_structure"></div>
@@ -12,7 +12,17 @@
             </t>
         </template>
 
+        <template id="website.recorridos_colectivos" name="Recorrido" page="True">
+            <t t-set="page_title">Recorridos de los Colectivos de Rosario</t>
+            <t t-set="body_classes">map-fullscreen page-homepage navigation-off-canvas</t>
+            <t t-call="website.layout">
+                <div class="oe_structure"></div>
+                <div class="oe_structure"></div>
+            </t>
+        </template>
+
         <template id="website.recorrido_colectivo" name="Recorrido" page="True">
+            <t t-set="page_title">Recorrido <t t-esc="colectivo_id.name"/></t>
             <t t-set="body_classes">map-fullscreen page-homepage navigation-off-canvas</t>
             <t t-call="website.layout">
                 <div class="oe_structure"></div>
