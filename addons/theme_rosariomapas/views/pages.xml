@@ -3,6 +3,7 @@
     <data>
 
         <template id="website.homepage" name="Mapa de Rosario" page="True">
+            <t t-set="page_title">Mapa de Rosario</t>
             <t t-set="body_classes">map-fullscreen page-homepage navigation-off-canvas</t>
             <t t-call="website.layout">
                 <div class="oe_structure"></div>
@@ -22,7 +23,7 @@
         </template>
 
         <template id="website.recorrido_colectivo" name="Recorrido" page="True">
-            <t t-set="page_title">Recorrido <t t-esc="colectivo_id.name"/></t>
+            <t t-set="page_title">Recorrido de la línea de colectivo <t t-esc="colectivo_id.name"/> en el mapa de Rosario</t>
             <t t-set="body_classes">map-fullscreen page-homepage navigation-off-canvas</t>
             <t t-call="website.layout">
                 <div class="oe_structure"></div>
@@ -33,6 +34,7 @@
         </template>
 
         <template id="website.item" name="Item" page="True">
+            <t t-set="page_title"><t t-esc="item_id.name"/> en el mapa de Rosario</t>
             <t t-set="body_classes">page-subpage page-item-detail navigation-off-canvas page-fade-in</t>
             <t t-call="website.layout">
                 <div class="oe_structure"></div>

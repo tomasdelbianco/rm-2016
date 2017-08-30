@@ -309,6 +309,7 @@ function createHomepageGoogleMap(_latitude,_longitude,json, action){
                 map.fitBounds(bounds);
                 if (data && data.url){
                     window.history.pushState({},"", "/recorrido/"+data.url);
+                    document.title = "Recorrido de la línea de colectivo " + data.name + " en el mapa de Rosario"
                 }
             });
         }
