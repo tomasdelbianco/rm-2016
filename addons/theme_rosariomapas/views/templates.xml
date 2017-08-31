@@ -62,38 +62,6 @@
         <template id="recorridos_colectivos" name="Recorridos">
             <!-- Page Canvas-->
             <div id="page-canvas">
-                <!--Off Canvas Navigation-->
-                <nav class="off-canvas-navigation">
-                    <header>Navigation</header>
-                    <div class="main-navigation navigation-off-canvas"></div>
-                </nav>
-                <!--end Off Canvas Navigation-->
-
-                <!--Sub Header-->
-                <section class="sub-header">
-                    <div class="search-bar horizontal collapse" id="redefine-search-form"></div>
-                    <!-- /.search-bar -->
-                    <div class="breadcrumb-wrapper">
-                        <div class="container">
-                            <div class="redefine-search">
-                                <a href="#redefine-search-form" class="inner" data-toggle="collapse" aria-expanded="false" aria-controls="redefine-search-form">
-                                    <span class="icon"></span>
-                                    <span>Redefine Search</span>
-                                </a>
-                            </div>
-                            <ol class="breadcrumb">
-                                <li><a href="index-directory.html"><i class="fa fa-home"></i></a></li>
-                                <li><a href="#">Page</a></li>
-                                <li class="active">Detail</li>
-                            </ol>
-                            <!-- /.breadcrumb-->
-                        </div>
-                        <!-- /.container-->
-                    </div>
-                    <!-- /.breadcrumb-wrapper-->
-                </section>
-                <!--end Sub Header-->
-
                 <!--Page Content-->
                 <div id="page-content">
                     <section class="container">
@@ -103,11 +71,6 @@
                                 <header>
                                     <h1 class="page-title">Recorridos de los Colectivos de Rosario</h1>
                                 </header>
-                                <ul class="bullets">
-                                    <t t-foreach="categorias" t-as="categoria">
-                                        <li t-attf-value="{{categoria.id}}"><a href="#"><t t-esc="categoria.name"/></a></li>
-                                    </t>
-                                </ul>
                                 <!--Listing Grid-->
                                 <section class="block equal-height">
                                     <div class="row">
