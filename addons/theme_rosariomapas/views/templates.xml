@@ -59,6 +59,94 @@
             </xpath>
         </template>
 
+        <template id="recorridos" name="Recorridos">
+            <!-- Page Canvas-->
+            <div id="page-canvas">
+                <!--Off Canvas Navigation-->
+                <nav class="off-canvas-navigation">
+                    <header>Navigation</header>
+                    <div class="main-navigation navigation-off-canvas"></div>
+                </nav>
+                <!--end Off Canvas Navigation-->
+
+                <!--Sub Header-->
+                <section class="sub-header">
+                    <div class="search-bar horizontal collapse" id="redefine-search-form"></div>
+                    <!-- /.search-bar -->
+                    <div class="breadcrumb-wrapper">
+                        <div class="container">
+                            <div class="redefine-search">
+                                <a href="#redefine-search-form" class="inner" data-toggle="collapse" aria-expanded="false" aria-controls="redefine-search-form">
+                                    <span class="icon"></span>
+                                    <span>Redefine Search</span>
+                                </a>
+                            </div>
+                            <ol class="breadcrumb">
+                                <li><a href="index-directory.html"><i class="fa fa-home"></i></a></li>
+                                <li><a href="#">Page</a></li>
+                                <li class="active">Detail</li>
+                            </ol>
+                            <!-- /.breadcrumb-->
+                        </div>
+                        <!-- /.container-->
+                    </div>
+                    <!-- /.breadcrumb-wrapper-->
+                </section>
+                <!--end Sub Header-->
+
+                <!--Page Content-->
+                <div id="page-content">
+                    <section class="container">
+                        <div class="">
+                            <!--Content-->
+                            <div class="">
+                                <header>
+                                    <h1 class="page-title">Recorridos de los Colectivos de Rosario</h1>
+                                </header>
+                                <ul class="bullets">
+                                    <t t-foreach="categorias" t-as="categoria">
+                                        <li t-attf-value="{{categoria.id}}"><a href="#"><t t-esc="categoria.name"/></a></li>
+                                    </t>
+                                </ul>
+                                <!--Listing Grid-->
+                                <section class="block equal-height">
+                                    <div class="row">
+                                        <t t-foreach="colectivos" t-as="colectivo">
+                                            <div class="col-md-3 col-sm-4">
+                                                <div class="item" style="">
+                                                    <div class="image">
+                                                        <a href="item-detail.html">
+                                                            <img src="assets/img/items/1.jpg" alt="">
+                                                        </a>
+                                                    </div>
+                                                    <div class="wrapper">
+                                                        <a t-attf-href="recorrido/{{colectivo.url}}"><h3><t t-esc="colectivo.name"/></h3></a>
+                                                        <figure><t t-esc="colectivo.empresa_tup_id.name"/></figure>
+                                                        <div class="info">
+                                                            <div class="type">
+                                                                <i class="glyphicon fa fa-bus"></i>
+                                                                <span>Ver Recorrido</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- /.item-->
+                                            </div>
+                                        </t>
+                                    </div>
+                                    <!--/.row-->
+                                </section>
+                                <!--end Listing Grid-->
+                            </div>
+
+                        </div>
+                    </section>
+                </div>
+                <!-- end Page Content-->
+            </div>
+            <!-- end Page Canvas-->
+        </template>
+
         <template id="item" name="Item">
             <!-- Page Canvas-->
             <div id="page-canvas">
