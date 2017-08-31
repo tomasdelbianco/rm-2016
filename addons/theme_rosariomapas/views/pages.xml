@@ -18,6 +18,7 @@
             <t t-set="body_classes">map-fullscreen page-homepage navigation-off-canvas</t>
             <t t-call="website.layout">
                 <div class="oe_structure"></div>
+                <t t-call="theme_rosariomapas.item"/>
                 <div class="oe_structure"></div>
             </t>
         </template>
@@ -38,7 +39,7 @@
             <t t-set="body_classes">page-subpage page-item-detail navigation-off-canvas page-fade-in</t>
             <t t-call="website.layout">
                 <div class="oe_structure"></div>
-                <t t-call="theme_rosariomapas.item"/>
+                <t t-call="theme_rosariomapas.recorridos_colectivos"/>
                 <div class="oe_structure"></div>
             </t>
         </template>

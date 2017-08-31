@@ -59,7 +59,7 @@
             </xpath>
         </template>
 
-        <template id="recorridos" name="Recorridos">
+        <template id="recorridos_colectivos" name="Recorridos">
             <!-- Page Canvas-->
             <div id="page-canvas">
                 <!--Off Canvas Navigation-->
